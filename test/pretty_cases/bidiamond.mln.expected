@@ -1,0 +1,2 @@
+ipSrc = 10.0.0.1 and ethTyp = ip and ipProto = tcp -> h0 s0 s1 s3 s5 s6 h6;
+ipSrc = 10.0.0.7 and ethTyp = ip and ipProto = tcp -> h6 s6 s5 s3 s2 s0 h0;

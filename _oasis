@@ -1,0 +1,105 @@
+OASISFormat: 0.3
+Name:        merlin
+Version:     0.1
+Synopsis:    A language for network management
+Authors:
+License:     LGPL
+Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
+
+BuildTools: ocamlbuild
+
+XStdFilesREADME: False
+XStdFilesAUTHORS: False
+
+Library merlin
+  Path: lib
+  CSources:
+    time_stubs.c
+  if system(linux)
+    CCLib:
+      -lrt
+  if system(macosx)
+    CCOpt:
+      -Wno-unused-command-line-argument-hard-error-in-future
+  BuildDepends:
+    str,
+    async,
+    core,
+    cstruct,
+    dprle,
+    netkat,
+    threads,
+    packet,
+    ocamlgraph,
+    openflow,
+    openflow.async,
+    topology
+  Modules:
+    Merlin_Dictionaries,
+    Merlin_LPPretty,
+    Merlin_Click,
+    Merlin_Globals,
+    Merlin_Gurobi,
+    Merlin_Human,
+    Merlin_Sinktree,
+    Merlin_LPTypes,
+    Merlin_Time,
+    Merlin_FrontEnd,
+    Merlin_LP,
+    Merlin_BigGraph,
+    Merlin_TC,
+    Merlin_NFA,
+    Merlin_Pretty,
+    Merlin_Types,
+    Merlin_Controller,
+    Merlin_LPBuffer,
+    Merlin_QConfig,
+    Merlin_Util,
+    Merlin_Lexer,
+    Merlin_Parser,
+    Merlin_Preprocess,
+    Merlin_Error,
+    Merlin_Topology,
+    Merlin_OpenFlow,
+    Merlin_Generate,
+    Merlin_Stats,
+    Merlin_Invariants
+
+Executable wizard
+  Install: False
+  Build$: flag(is_native)
+  Path: lib
+  MainIs: Merlin.ml
+  CompiledObject: native
+  BuildDepends:
+    str,
+    cstruct,
+    threads,
+    packet,
+    ocamlgraph,
+    openflow,
+    topology,
+    merlin
+
+Executable unittest
+ Install: false
+ Build$: flag(is_native)
+ Path:       test
+ MainIs:     Test.ml
+ CompiledObject: native
+ BuildDepends:
+   oUnit,
+   pa_ounit,
+   pa_ounit.syntax,
+   str,
+   cstruct,
+   threads,
+   packet,
+   ocamlgraph,
+   openflow,
+   topology,
+   merlin
+
+Test all_tests
+ Command: $unittest inline-test-runner dummy
+ Run: True

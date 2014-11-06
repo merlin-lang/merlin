@@ -1,0 +1,2 @@
+exists srcIP = 192.168.1.1 ->  .* at min(50 Mbps);
+exists srcIP = 192.168.1.2 ->  .* at min(50 Mbps);

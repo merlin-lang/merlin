@@ -1,0 +1,5 @@
+merlin.lp
+merlin.sol
+setup.data
+*.native
+_build/

@@ -1,0 +1,5 @@
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.16 -> kodiak .* olympic at min(350Mbps) max(1Gbps);
+ipDst = 10.1.1.13 and ipSrc = 10.1.1.16 -> olympic .* kodiak at min(350Mbps) max(1Gbps);
+
+ipDst = 10.1.1.15 and ipSrc = 10.1.1.14 -> polar .* spirit at min(50Mbps) max(1Gbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.14 -> spirit .* polar at min(50Mbps) max(1Gbps);

@@ -1,0 +1,4 @@
+( ipSrc in 192.168.1.1/16 and
+  ipDst in 192.168.1.1/16 and
+  ipProto = tcp and tcpDstPort = 50060 )
+  -> .* at min(100Mbps);

@@ -1,0 +1,2 @@
+ipSrc = 10.1.1.1 ->  h1 s1 h2 at min(50 Mbps);
+forall ipSrc = 192.168.1.1 or ipSrc = 192.168.1.2 ->  .* at min(50 Mbps);

@@ -1,0 +1,1 @@
+forall srcIP = 192.168.1.1 or srcIP = 192.168.1.2 ->  .* at min(50 Mbps);

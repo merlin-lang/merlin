@@ -1,0 +1,4 @@
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.13 -> polar pronto1 kodiak at min(700Mbps);
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.13 -> grizzly pronto1 kodiak at min(50Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.14 -> kodiak pronto1 polar at min(50Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.12 -> kodiak pronto1 grizzly at min(50Mbps);

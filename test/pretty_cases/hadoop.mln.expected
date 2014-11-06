@@ -1,0 +1,57 @@
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.14 and ipProto = tcp -> kodiak pronto1 polar at min(100Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.15 and ipProto = tcp -> kodiak pronto1 spirit at min(100Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.16 and ipProto = tcp -> kodiak pronto1 olympic at min(100Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.12 and ipProto = tcp -> kodiak pronto1 grizzly at min(100Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.11 and ipProto = tcp -> kodiak pronto1 frintel at min(100Mbps);
+
+
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.13 and ipProto = tcp -> polar pronto1 kodiak at min(100Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.15 and ipProto = tcp -> polar pronto1 spirit at min(100Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.16 and ipProto = tcp -> polar pronto1 olympic at min(100Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.11 and ipProto = tcp -> polar pronto1 frintel at min(100Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.12 and ipProto = tcp -> polar pronto1 grizzly at min(100Mbps);
+
+
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.13 and ipProto = tcp -> spirit pronto1 kodiak at min(100Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.14 and ipProto = tcp -> spirit pronto1 polar at min(100Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.16 and ipProto = tcp -> spirit pronto1 olympic at min(100Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.11 and ipProto = tcp -> spirit pronto1 frintel at min(100Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.12 and ipProto = tcp -> spirit pronto1 grizzly at min(100Mbps);
+
+
+
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.13 and ipProto = tcp -> olympic pronto1 kodiak at min(100Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.14 and ipProto = tcp -> olympic pronto1 polar at min(100Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.15 and ipProto = tcp -> olympic pronto1 spirit at min(100Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.11 and ipProto = tcp -> olympic pronto1 frintel at min(100Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.12 and ipProto = tcp -> olympic pronto1 grizzly at min(100Mbps);
+
+
+ipSrc = 10.1.1.11 and ipDst = 10.1.1.12 and ipProto = tcp -> frintel pronto1 grizzly at min(100Mbps);
+ipSrc = 10.1.1.11 and ipDst = 10.1.1.13 and ipProto = tcp -> frintel pronto1 kodiak at min(100Mbps);
+ipSrc = 10.1.1.11 and ipDst = 10.1.1.14 and ipProto = tcp -> frintel pronto1 polar at min(100Mbps);
+ipSrc = 10.1.1.11 and ipDst = 10.1.1.15 and ipProto = tcp -> frintel pronto1 spirit at min(100Mbps);
+ipSrc = 10.1.1.11 and ipDst = 10.1.1.16 and ipProto = tcp -> frintel pronto1 olympic at min(100Mbps);
+
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.11 and ipProto = tcp -> grizzly pronto1 frintel at min(100Mbps);
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.13 and ipProto = tcp -> grizzly pronto1 kodiak at min(100Mbps);
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.14 and ipProto = tcp -> grizzly pronto1 polar at min(100Mbps);
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.15 and ipProto = tcp -> grizzly pronto1 spirit at min(100Mbps);
+ipSrc = 10.1.1.12 and ipDst = 10.1.1.16 and ipProto = tcp -> grizzly pronto1 olympic at min(100Mbps);
+
+
+
+
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.14 and ipProto = udp -> kodiak pronto1 polar at min(1Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.15 and ipProto = udp -> kodiak pronto1 spirit at min(1Mbps);
+ipSrc = 10.1.1.13 and ipDst = 10.1.1.16 and ipProto = udp -> kodiak pronto1 olympic at min(1Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.13 and ipProto = udp -> polar pronto1 kodiak at min(1Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.15 and ipProto = udp -> polar pronto1 spirit at min(1Mbps);
+ipSrc = 10.1.1.14 and ipDst = 10.1.1.16 and ipProto = udp -> polar pronto1 olympic at min(1Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.13 and ipProto = udp -> spirit pronto1 kodiak at min(1Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.14 and ipProto = udp -> spirit pronto1 polar at min(1Mbps);
+ipSrc = 10.1.1.15 and ipDst = 10.1.1.16 and ipProto = udp -> spirit pronto1 olympic at min(1Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.13 and ipProto = udp -> olympic pronto1 kodiak at min(1Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.14 and ipProto = udp -> olympic pronto1 polar at min(1Mbps);
+ipSrc = 10.1.1.16 and ipDst = 10.1.1.15 and ipProto = udp -> olympic pronto1 spirit at min(1Mbps);
+

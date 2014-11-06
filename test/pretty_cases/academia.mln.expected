@@ -1,0 +1,20 @@
+
+(* Traffic originating from/going to the CS department *)
+(ipSrc = 10.0.1.1 or ipSrc = 10.0.2.1 or ipSrc = 10.0.3.1) or
+(ipDst = 10.0.1.1 or ipDst = 10.0.2.1 or ipDst = 10.0.3.1)
+  -> (h_pl|h_theory|h_systems|h_out) (s_pl|s_theory_|s_systems|s_cs|s_up)* ( h_pl|h_theory|h_systems|h_dean);
+
+(ipSrc = 10.0.1.1 or ipSrc = 10.0.2.1 or ipSrc = 10.0.3.1) and
+(ipDst = 10.0.1.1 or ipDst = 10.0.2.1 or ipDst = 10.0.3.1)
+  -> (h_pl|h_theory|h_systems) (s_pl|s_theory_|s_systems|s_cs|s_up)* ( h_pl|h_theory|h_systems); 
+
+(* ipDst = 10.0.1.1 or ipDst = 10.0.2.1 or ipDst = 10.0.3.2
+ -> (h_pl|h_theory|h_systems|h_dean | h_out) (s_cs|s_up)* (s_pl|s_theory_|s_systems)* ( h_pl|h_theory|h_systems|h_dean|h_out); *)
+
+(* Restrictions for Dean <-> Admin communications *)
+(* ipSrc = 10.1.0.1 and ipDst = 11.0.0.1 -> h_dean s_cs s_admin h_admin; *)
+(* ipDst = 10.1.0.1 and ipSrc = 11.0.0.1 -> h_admin s_admin s_cs h_dean; *)
+
+(* Dean <-> Anyone else *)
+(* ipSrc = 10.1.0.1 and not(ipDst = 11.0.0.1) -> h_dean (s_cs|s_pl|s_theory|s_systems)* (h_pl|h_theory|h_systems); *)
+(* ipDst = 10.1.0.1 and not(ipSrc = 11.0.0.1) -> (h_pl|h_theory|h_systems) (s_cs|s_pl|s_theory|s_systems)* h_dean; *)

@@ -1,0 +1,4 @@
+forall ( ipSrc in 192.168.1.1 / 8 ) 
+  -> .* m1 .*;
+forall (not ipSrc in 192.168.1.2/8 ) 
+  -> !( .* m1 .* );

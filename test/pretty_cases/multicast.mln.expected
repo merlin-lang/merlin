@@ -1,0 +1,4 @@
+forall
+( ipDst = 224.0.0.1 or
+  ipDst = 224.0.0.2 )
+  -> compress .* at max(10Gbps);
