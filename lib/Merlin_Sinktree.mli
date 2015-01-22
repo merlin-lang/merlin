@@ -11,7 +11,7 @@ module type TOPO_NFA = sig
   val trans_to_vertex : vertex SymbolHash.t
   val state_to_vertex : (NFA.state,vertex) Hashtbl.t
   val host_to_switch  : vertex Net.Topology.VertexHash.t
-  val switch_to_hosts : vertex Net.Topology.VertexHash.t
+  val switch_to_hosts : vertex list Net.Topology.VertexHash.t
   val single_hops     : vertex Hashset.hashset
 end
 

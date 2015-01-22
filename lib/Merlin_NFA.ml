@@ -278,8 +278,8 @@ module NFA = struct
 
     let num = Net.Topology.num_vertexes t in
 
-    let vertex_to_state = VertexHash.create num in
-    let vertex_to_symbol = VertexHash.create num in
+    let vertex_to_state = VertexHash.create ~size:num () in
+    let vertex_to_symbol = VertexHash.create ~size:num () in
     let symbol_to_vertex = SymbolHash.create num in
     let state_to_vertex = Hashtbl.create num in
 
@@ -291,9 +291,9 @@ module NFA = struct
         let sym = get_symbol code in
 
         (* add_trans nfa state symbol state; *)
-        VertexHash.add vertex_to_symbol n sym;
+        VertexHash.add_exn vertex_to_symbol n sym;
         SymbolHash.add symbol_to_vertex sym n;
-        VertexHash.add vertex_to_state n state;
+        VertexHash.add_exn vertex_to_state n state;
         Hashtbl.add state_to_vertex state n; end
     ) t ;
 
@@ -301,9 +301,9 @@ module NFA = struct
       let src,_ = Net.Topology.edge_src e in
       let dst,_ = Net.Topology.edge_dst e in
       if p src && p dst then begin
-        let n_src = VertexHash.find vertex_to_state src in
-        let n_dst = VertexHash.find vertex_to_state dst in
-        let symbol = VertexHash.find vertex_to_symbol src in
+        let n_src = VertexHash.find_exn vertex_to_state src in
+        let n_dst = VertexHash.find_exn vertex_to_state dst in
+        let symbol = VertexHash.find_exn vertex_to_symbol src in
         add_trans nfa n_src (Character symbol) n_dst end
     ) t ;
 

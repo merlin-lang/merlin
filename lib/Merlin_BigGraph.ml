@@ -149,8 +149,8 @@ module CrossGraph = struct
     let links = Net.Topology.edges t in
     let transitions = NFA.edges nfa in
     let graph = create
-      ~size:((Net.Topology.EdgeSet.cardinal links) * (NFA.EdgeSet.cardinal transitions)) () in
-    Net.Topology.EdgeSet.iter (fun pe ->
+      ~size:((Net.Topology.EdgeSet.length links) * (NFA.EdgeSet.cardinal transitions)) () in
+    Net.Topology.EdgeSet.iter links ~f:(fun pe ->
       let p_src,_ = Net.Topology.edge_src pe in
       let p_dst,_ = Net.Topology.edge_dst pe in
       let src_str = Node.name (Net.Topology.vertex_to_label t p_src) in
@@ -163,7 +163,7 @@ module CrossGraph = struct
           else ()
         ) (NFA.edge_symbols t)
       ) transitions
-    ) links;
+    ) ;
     let srcstate = NFA.StateSet.choose (NFA.inits nfa) in
     let dststate = NFA.StateSet.choose (NFA.accept_eps nfa) in
     (graph,srcstate,dststate)

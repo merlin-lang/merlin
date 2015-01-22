@@ -40,7 +40,7 @@ let parse_topo_file fname =
     let open Net.Topology in
     let topo = Net.Parse.from_dotfile fname in
     let nodes = vertexes topo in
-    let _ = VertexSet.iter (fun n ->
+    let _ = VertexSet.iter nodes ~f:(fun n ->
       let label = vertex_to_label topo n in
       let name = Node.name label in
       let ip = Node.ip label in
@@ -48,7 +48,7 @@ let parse_topo_file fname =
       LocationHash.add location_to_addr name ip;
       AddrHash.add addr_to_location ip name;
       let _ = get_symbol (name, None) in ()
-    ) nodes in
+    ) in
     topo
   with _ -> raise Topology_parse_error
 
@@ -214,11 +214,11 @@ let solve_sinktree (ap:ast_program) (topo:topo) : flow list =
     let src_hosts = LocationSet.fold (fun l acc ->
       (name_to_node l) :: acc) srcs [] in
     let src_switches = List.fold_left (fun acc h ->
-      Net.Topology.VertexSet.add (VertexHash.find S.host_to_switch h) acc
+      Net.Topology.VertexSet.add acc (VertexHash.find_exn S.host_to_switch h)
     )  Net.Topology.VertexSet.empty src_hosts in
 
     let flows = List.fold_left (fun acc (tree,root,_,_) ->
-      let hosts = VertexHash.find_all S.switch_to_hosts root in
+      let hosts = VertexHash.find_exn S.switch_to_hosts root in
       let fwds = ST.generate tree root src_switches hosts in
       (pred,fwds)::acc
     ) acc trees in

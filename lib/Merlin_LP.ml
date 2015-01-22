@@ -117,9 +117,7 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
     (* TODO(jnf): think about how to optimize this. *)
     let big_graph nfa rate stmt_var m =
       let graph = BigGraph.create ~size:10000 () in
-      let m =
-        Net.Topology.EdgeSet.fold
-          (fun phys_edge m ->
+      let m = Net.Topology.EdgeSet.fold phys_edges ~init:m ~f:(fun m phys_edge ->
             let phys_src,_ = (Net.Topology.edge_src phys_edge) in
             let phys_dst,_ = (Net.Topology.edge_dst phys_edge) in
             let phys_src_str = vertex_to_string phys phys_src in
@@ -153,8 +151,7 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
                   (Merlin_NFA.NFA.edge_symbols nfa_edge) (false,m) in
                 m')
               (NFA.edges nfa) m in
-            m')
-          phys_edges m in
+            m') in
       (graph,m)
     in
     let bg_start = Merlin_Time.time () in
@@ -229,8 +226,8 @@ module ShortestPathHeuristic : LP_HEURISTIC  = struct
     (utilization phys graphs_nfas)@(flow_conservation phys graphs_nfas)
 
   let mk_bounds phys =
-    Net.Topology.EdgeSet.fold
-      (fun phys_edge acc ->
+    Net.Topology.EdgeSet.fold (Net.Topology.edges phys) ~init:[]
+      ~f:(fun acc phys_edge ->
         let label = Net.Topology.edge_to_label phys phys_edge in
         let src,_ = (Net.Topology.edge_src phys_edge) in
         let dst,_ = (Net.Topology.edge_dst phys_edge) in
@@ -239,7 +236,6 @@ module ShortestPathHeuristic : LP_HEURISTIC  = struct
           (vertex_to_string phys dst) in
         let b = Bound(Var(usage),Leq,Int(Link.capacity label)) in
         b::acc)
-      (Net.Topology.edges phys) []
 
   let mk_types phys graphs_nfas  =
     let terms = List.fold_left
@@ -257,7 +253,7 @@ module MinMaxRatioHeuristic : LP_HEURISTIC  = struct
   let mk_constraints graphs_nfas phys =
     let slack_constraints phys =
       let phys_edgs = Net.Topology.edges phys in
-      Net.Topology.EdgeSet.fold (fun phys_edge acc ->
+      Net.Topology.EdgeSet.fold phys_edgs ~init:[] ~f:(fun acc phys_edge ->
         let label = Net.Topology.edge_to_label phys phys_edge in
         let src,_ = Net.Topology.edge_src phys_edge in
         let dst,_ = Net.Topology.edge_dst phys_edge in
@@ -270,7 +266,7 @@ module MinMaxRatioHeuristic : LP_HEURISTIC  = struct
           (vertex_to_string phys dst) in
         let mult = Mult ( Int(capacity), Var("max_load_ratio") ) in
         let expr = Minus( mult, Minus(Var(usage), Var(slack))) in
-        Constraint(expr,Eq,Int(0L))::acc ) phys_edgs []
+        Constraint(expr,Eq,Int(0L))::acc )
     in
     let u = utilization phys graphs_nfas in
     let f = flow_conservation phys graphs_nfas in
@@ -278,8 +274,8 @@ module MinMaxRatioHeuristic : LP_HEURISTIC  = struct
     u@f@s
 
   let mk_bounds phys =
-    Net.Topology.EdgeSet.fold
-      (fun phys_edge acc ->
+    Net.Topology.EdgeSet.fold (Net.Topology.edges phys) ~init:[]
+      ~f:(fun acc phys_edge ->
         let src,_ = Net.Topology.edge_src phys_edge in
         let dst,_ = Net.Topology.edge_dst phys_edge in
         let label = Net.Topology.edge_to_label phys phys_edge in
@@ -292,7 +288,6 @@ module MinMaxRatioHeuristic : LP_HEURISTIC  = struct
           (vertex_to_string phys dst) in
         let c = Bound( Var(slack),Geq,Int(0L)) in
         c::b::acc)
-      (Net.Topology.edges phys) []
 
   let mk_types phys graphs_nfas  =
     let terms = List.fold_left
@@ -309,7 +304,7 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
   let mk_constraints graphs_nfas phys =
     let slack_constraints phys =
       let phys_edgs = Net.Topology.edges phys in
-      Net.Topology.EdgeSet.fold (fun phys_edge acc ->
+      Net.Topology.EdgeSet.fold phys_edgs ~init:[] ~f:(fun acc phys_edge ->
         let src,_ = Net.Topology.edge_src phys_edge in
         let dst,_ = Net.Topology.edge_dst phys_edge in
         let usage = Printf.sprintf "%s_%s_bw_usage"
@@ -319,7 +314,7 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
           (vertex_to_string phys src)
           (vertex_to_string phys dst) in
         let expr = Minus( Var("max_load"), Minus(Var(usage), Var(slack))) in
-        Constraint(expr,Eq,Int(0L))::acc ) phys_edgs []
+        Constraint(expr,Eq,Int(0L))::acc )
     in
     let u = utilization phys graphs_nfas in
     let f = flow_conservation phys graphs_nfas in
@@ -327,8 +322,8 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
     u@f@s
 
   let mk_bounds phys =
-    Net.Topology.EdgeSet.fold
-      (fun phys_edge acc ->
+    Net.Topology.EdgeSet.fold (Net.Topology.edges phys) ~init:[]
+      ~f:(fun acc phys_edge ->
         let src,_ = Net.Topology.edge_src phys_edge in
         let dst,_ = Net.Topology.edge_dst phys_edge in
         let label = Net.Topology.edge_to_label phys phys_edge in
@@ -341,7 +336,6 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
           (vertex_to_string phys dst) in
         let c = Bound( Var(slack),Geq,Int(0L)) in
         c::b::acc)
-      (Net.Topology.edges phys) []
 
   let mk_types phys graphs_nfas  =
     let terms = List.fold_left

@@ -34,13 +34,13 @@ let fresh_queue sw port =
 
 let get_shortest_path t s d tbl len =
   let open Node in
-  let src = VertexHash.find tbl s in
-  let dst = VertexHash.find tbl d in
+  let src = VertexHash.find_exn tbl s in
+  let dst = VertexHash.find_exn tbl d in
 
   let gather_prevs previous =
     let rec mk_path current =
       if current = src then NPH.replace nodes_to_paths (src,src) [src] else
-        let prev = VertexHash.find previous current in
+        let prev = VertexHash.find_exn previous current in
         let p = try List.rev (NPH.find nodes_to_paths (src,prev))
           with Not_found ->
             mk_path prev;
@@ -50,12 +50,11 @@ let get_shortest_path t s d tbl len =
         NPH.replace nodes_to_paths (src,current) (List.rev p')
     in
 
-    VertexHash.iter (fun node _ ->
+    VertexHash.iter previous ~f:(fun ~key:node ~data:_ ->
       if node = src then ()
       else if NPH.mem nodes_to_paths (src,node) then ()
       else mk_path node
-    ) previous
-  in
+    ) in
 
   let p =
     if src = dst then [src] else

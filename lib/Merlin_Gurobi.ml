@@ -81,25 +81,25 @@ let get_fns t n a =
 let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
     (min:int64 option) (max:int64 option) : forward list =
   let open Node in
-  let fwd_tbl = VertexHash.create ((List.length eas)/2) in
-  let fn_tbl = VertexHash.create 10 in
+  let fwd_tbl = VertexHash.create ~size:((List.length eas)/2) () in
+  let fn_tbl = VertexHash.create ~size:10 () in
 
   let update_vertex_in (n:vertex) (p:portId) (h:hop) =
     try
-      let (_,op,_,oh) = VertexHash.find fwd_tbl n in
+      let (_,op,_,oh) = VertexHash.find_exn fwd_tbl n in
       VertexHash.replace fwd_tbl n (p,op,h,oh)
     with Not_found ->
-      VertexHash.add fwd_tbl n (p,0l,h,Nohop) in
+      VertexHash.add_exn fwd_tbl n (p,0l,h,Nohop) in
   let update_vertex_out (n:vertex) (p:portId) (h:hop) =
     try
-      let (ip,_,ih,_) = VertexHash.find fwd_tbl n in
+      let (ip,_,ih,_) = VertexHash.find_exn fwd_tbl n in
       VertexHash.replace fwd_tbl n (ip,p,ih,h)
     with Not_found ->
-      VertexHash.add fwd_tbl n (0l,p,Nohop,h) in
+      VertexHash.add_exn fwd_tbl n (0l,p,Nohop,h) in
 
   let add_function table host f  =
     let set =
-      try VertexHash.find table host
+      try VertexHash.find_exn table host
       with Not_found -> StringSet.empty
     in
     VertexHash.replace table host (StringSet.add f set)
@@ -131,11 +131,11 @@ let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
 
   ) eas;
 
-  VertexHash.fold (fun n (ip,op,ih,oh) acc ->
+  VertexHash.fold fwd_tbl ~init:[] ~f:(fun ~key:n ~data:(ip,op,ih,oh) acc ->
     let label = Net.Topology.vertex_to_label t n in
 
     let fns =
-      try let set = VertexHash.find fn_tbl n in
+      try let set = VertexHash.find_exn fn_tbl n in
           Some (StringSet.elements set)
       with Not_found -> None
     in
@@ -147,7 +147,7 @@ let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
                 topo_vertex = n ; predicate = None ; functions = fns ;
               } in
     fwd :: acc
-  ) fwd_tbl []
+  )
 
 (* Do all the required bookkeeping and call the Gurobi runtime, keeping all the *)
 (*    appropriate measurements *)

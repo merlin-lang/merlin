@@ -41,10 +41,10 @@ let var_count = ref 0
 let print_stats topo =
   if (!stat) then begin
     (* Topology information *)
-    Printf.printf "Switches:\t%d\n" (Net.Topology.VertexSet.cardinal (switches topo));
-    Printf.printf "Hosts:\t%d\n" (Net.Topology.VertexSet.cardinal (hosts topo));
+    Printf.printf "Switches:\t%d\n" (Net.Topology.VertexSet.length (switches topo));
+    Printf.printf "Hosts:\t%d\n" (Net.Topology.VertexSet.length (hosts topo));
     Printf.printf "Unidirectional Links:\t%d\n"
-      (Net.Topology.EdgeSet.cardinal (Net.Topology.edges topo));
+      (Net.Topology.EdgeSet.length (Net.Topology.edges topo));
 
     (* Policy information *)
     Printf.printf "Statements:\t%d\n" !stmts_count;

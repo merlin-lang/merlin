@@ -19,30 +19,30 @@ let pad_topo (n:topo) : topo * vertex * vertex =
 
   let vs = vertexes nao in
 
-  let n',_ = VertexSet.fold (fun v (acc,port) ->
+  let n',_ = VertexSet.fold vs ~init:(nao, port) ~f:(fun (acc,port) v ->
     let acc',_ = add_edge acc alpha port edge_label v Int32.max_int in
     (acc', Int32.succ port)
-  ) vs (nao, port) in
+  ) in
 
   let p = (Int32.pred (Int32.max_int)) in
-  let n'',_ = VertexSet.fold (fun v (acc,port) ->
+  let n'',_ = VertexSet.fold vs ~init:(n',port) ~f:(fun (acc,port) v ->
     let acc',_ = add_edge acc v p edge_label omega port in
     (acc',Int32.succ port)
-  ) vs (n',port) in
+  )  in
 
   (n'',alpha,omega)
 
-let remove_hosts (n:topo) : (vertex VertexHash.t  * vertex VertexHash.t * topo) =
+let remove_hosts (n:topo) : (vertex VertexHash.t  * vertex list VertexHash.t * topo) =
   let open Net.Topology in
   let open Node in
-  let hosts = VertexSet.filter (fun v ->
+  let hosts = VertexSet.filter (vertexes n) ~f:(fun v ->
     match Node.device (vertex_to_label n v) with
       | Host -> true
       | _ -> false
-  ) (vertexes n) in
+  ) in
 
-  let host_to_switch = VertexHash.create (VertexSet.cardinal hosts) in
-  let switch_to_host = VertexHash.create (VertexSet.cardinal hosts) in
+  let host_to_switch = VertexHash.create ~size:(VertexSet.length hosts) () in
+  let switch_to_host = VertexHash.create ~size:(VertexSet.length hosts) () in
 
   let hless = fold_edges (fun e acc ->
     let s,sp = (edge_src e) in
@@ -55,7 +55,7 @@ let remove_hosts (n:topo) : (vertex VertexHash.t  * vertex VertexHash.t * topo) 
       | Switch,_ ->
         let n',v = add_vertex acc (vertex_to_label n s) in
         VertexHash.replace host_to_switch d v;
-        VertexHash.add switch_to_host v d;
+        VertexHash.add_multi switch_to_host v d;
         n'
       | _,Switch ->
         let n', v = add_vertex acc (vertex_to_label n d) in n'
@@ -84,44 +84,44 @@ let host_to_switch (t:topo) (h:vertex) =
 
 let switch_to_hosts (t:topo) (sw:vertex) =
   let open Net.Topology in
-  VertexSet.elements (VertexSet.filter (is_host t) (neighbors t sw))
+  VertexSet.elements (VertexSet.filter (neighbors t sw) ~f:(is_host t))
 
 let hosts (t:topo) : Net.Topology.VertexSet.t =
   let vs = Net.Topology.vertexes t in
-  Net.Topology.VertexSet.filter (fun n ->
+  Net.Topology.VertexSet.filter vs ~f:(fun n ->
     let l = Net.Topology.vertex_to_label t n in
     match (Node.device l) with
       | Node.Host -> true
       | _ -> false
-  ) vs
+  )
 
 let switches (t:topo) : Net.Topology.VertexSet.t =
   let vs = Net.Topology.vertexes t in
-  Net.Topology.VertexSet.filter (fun n ->
+  Net.Topology.VertexSet.filter vs ~f:(fun n ->
     let l = Net.Topology.vertex_to_label t n in
     match (Node.device l) with
       | Node.Switch -> true
       | _ -> false
-  ) vs
+  )
 
 let switches_to_ips (t:topo) :  (switchId, Packet.nwAddr) Hashtbl.t =
   let open Net.Topology in
   let tbl = Hashtbl.create (num_vertexes t) in
   let vs = vertexes t in
-  VertexSet.iter (fun v ->
+  VertexSet.iter vs ~f:(fun v ->
   let l = vertex_to_label t v in
   match (Node.device l) with
     | Node.Switch -> Hashtbl.add tbl (Node.id l) (Node.ip l)
-    | _ -> ()) vs ;
+    | _ -> ()) ;
   tbl
 
 let map_endpoints (t:topo) =
   (* ASSUMPTION: The switch-host connections are symmetric, so updated the
      tables for only one case is correct and sufficient. *)
   let open Net.Topology in
-  let host_to_switch = VertexHash.create 100 in
-  let switch_to_hosts = VertexHash.create 100 in
-  EdgeSet.iter (fun e ->
+  let host_to_switch = VertexHash.create ~size:100 () in
+  let switch_to_hosts = VertexHash.create ~size:100 () in
+  EdgeSet.iter (edges t) ~f:(fun e ->
     let open Node in
     let s,sp = (edge_src e) in
     let d,dp = (edge_dst e) in
@@ -130,9 +130,9 @@ let map_endpoints (t:topo) =
     match s',d' with
       | Switch,Host ->
         VertexHash.replace host_to_switch d s;
-        VertexHash.add switch_to_hosts s d
+        VertexHash.add_multi switch_to_hosts s d
       | _ -> ()
-  ) (edges t);
+  ) ;
   (host_to_switch,switch_to_hosts)
 
 let to_dotfile (t:topo) (fname:string) =

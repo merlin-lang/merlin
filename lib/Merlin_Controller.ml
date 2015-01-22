@@ -23,31 +23,25 @@ end
 
 module type MAKE = functor (T:TABLES) -> S
 
+
 module Make (T:TABLES) = struct
 
-  let setup_flow_table (ctrlr:OF.t) (swid: switchId) (ft:SDN_Types.flowTable)
+  let setup_flow_table (ctrlr:OF.t) (client: OF.Client_id.t) (ft:SDN_Types.flowTable)
       : unit Deferred.t =
-    if (!Merlin_Globals.verbose) then begin
-    Printf.printf "\nSetting up flowtable on Switch %Ld\n%s\n\n%!" swid
-      (Merlin_Pretty.string_of_flowTable ft); end;
     let delete_flows =
       OpenFlow0x01.Message.FlowModMsg OpenFlow0x01_Core.delete_all_flows in
     let to_flow_mod prio flow =
       OpenFlow0x01.Message.FlowModMsg (SDN_OpenFlow0x01.from_flow prio flow) in
-    match OF.client_id_of_switch ctrlr swid with
-    | None -> return ()
-    | Some ctrlr_id ->
-      OF.send ctrlr ctrlr_id (5l, delete_flows) >>= fun _ ->
+    OF.send ctrlr client (5l, delete_flows) >>= fun _ ->
       let priority = ref 65536 in
       Deferred.List.iter ft ~f:(fun flow ->
 	if (!Merlin_Globals.verbose) then begin
           Printf.printf "%s\n%!"
             (Merlin_Pretty.string_of_flow flow) end;
 	decr priority;
-	OF.send ctrlr ctrlr_id (0l, to_flow_mod !priority flow) >>= function
+	OF.send ctrlr client (0l, to_flow_mod !priority flow) >>= function
 	| `Sent _ ->  return ()
 	| `Drop exn -> return () )
-
 
   let of_handler (ctrlr:OF.t) event =
     match event with
@@ -61,14 +55,14 @@ module Make (T:TABLES) = struct
             Merlin_OpenFlow.compile_flowtable swid policy end
           with Not_found ->
             Printf.printf "No flow table found\n%!"; []  in
-        setup_flow_table ctrlr swid flow_table >>= (fun _ -> return [])
+        setup_flow_table ctrlr cid flow_table >>= (fun _ -> return [])
       | _ -> Printf.printf "Nothing connected\n%!"; return []
 
   let start (port:int) : unit =
     let open Async_OpenFlow.Stage in
     OF.create port ()
     >>> ( fun ctrlr ->
-      let stages = OF.features >=> of_handler in
+      let stages = of_handler in
       Printf.printf "Got stages\n%!";
       let r = run stages ctrlr (OF.listen ctrlr) in
       Printf.printf "Run stages\n%!";

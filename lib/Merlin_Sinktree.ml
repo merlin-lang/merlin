@@ -13,7 +13,7 @@ module type TOPO_NFA = sig
   val trans_to_vertex : vertex SymbolHash.t
   val state_to_vertex : (NFA.state,vertex) Hashtbl.t
   val host_to_switch  : vertex VertexHash.t
-  val switch_to_hosts : vertex VertexHash.t
+  val switch_to_hosts : vertex list VertexHash.t
   val single_hops     : vertex Hashset.hashset
 end
 
@@ -57,8 +57,8 @@ module Make (S:TOPO_NFA) = struct
     let src_hosts = LocationSet.fold (fun l acc ->
       (name_to_node l) :: acc) srcs [] in
     let src_states = List.fold_left (fun acc host ->
-      let sw =  (VertexHash.find S.host_to_switch host) in
-      NFA.StateSet.add (VertexHash.find vertex_to_state sw) acc
+      let sw =  (VertexHash.find_exn S.host_to_switch host) in
+      NFA.StateSet.add (VertexHash.find_exn vertex_to_state sw) acc
     ) NFA.StateSet.empty src_hosts in
 
     let _ = NFA.init_all topo_nfa src_states in
@@ -68,9 +68,9 @@ module Make (S:TOPO_NFA) = struct
 
     let tbl = Hashtbl.create (List.length sink_hosts) in
     let sink_states = List.fold_left (fun acc host ->
-      let sw = VertexHash.find host_to_switch host in
-      let state = (VertexHash.find vertex_to_state sw) in
-      let trans = VertexHash.find S.vertex_to_trans sw in
+      let sw = VertexHash.find_exn host_to_switch host in
+      let state = (VertexHash.find_exn vertex_to_state sw) in
+      let trans = VertexHash.find_exn S.vertex_to_trans sw in
       Hashtbl.replace tbl state trans;
       NFA.StateSet.add state acc
     ) NFA.StateSet.empty sink_hosts in
@@ -223,7 +223,7 @@ module Make (S:TOPO_NFA) = struct
 
     (* Fold over all edges in the forwarding S.topo and generate appropriate
        forwarding instructions *)
-    let inter_fwds = EdgeSet.fold (fun edge acc ->
+    let inter_fwds = EdgeSet.fold (edges soln) ~init:[] ~f:(fun acc edge ->
       let s,sp = edge_src edge in
       let slabel = vertex_to_label soln s in
       let s' = vertex_of_label S.topo slabel in
@@ -231,7 +231,7 @@ module Make (S:TOPO_NFA) = struct
 
       (* For each ingress switch, make a single forwarding instruction for all
          the hosts with the destination predicate *)
-      if VertexSet.mem s' ingress then
+      if VertexSet.mem ingress s' then
         if (s' = root) then acc
         else
           let _,sp = edge_src edge in
@@ -252,7 +252,7 @@ module Make (S:TOPO_NFA) = struct
                   ; min = None ; max = None; predicate = None
                   ; functions = None ; } in
         fwd::acc
-    ) (edges soln) [] in
+    ) in
 
     if (num_vertexes soln) = 1 then
       (* If there's only a single switch in the path, don't tag/untag, generate
