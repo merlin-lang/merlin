@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 42ea9ff707aa3f356acea1511e97fcf6) *)
+(* DO NOT EDIT (digest: a676bcd04df6ce7cf649eab234ba2c42) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -17,11 +17,10 @@ In order to compile this package, you will need:
 * core for library merlin
 * cstruct
 * dprle for library merlin
-* netkat for library merlin
-* packet
 * ocamlgraph
-* openflow
+* frenetic for library merlin
 * topology
+* packet for executable unittest, executable wizard
 * oUnit for executable unittest
 * pa_ounit for executable unittest
 

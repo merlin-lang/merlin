@@ -1,8 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2ad76d7eada843760fcea5f1c7f92672)
+# DO NOT EDIT (digest: b34688667b40320396b3d6c45bb5ab48)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
+true: annot, bin_annot
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
 ".bzr": -traverse
@@ -15,7 +16,7 @@
 "_darcs": not_hygienic
 # Library merlin
 "lib/merlin.cmxs": use_merlin
-<lib/*.ml{,i}>: oasis_library_merlin_ccopt
+<lib/*.ml{,i,y}>: oasis_library_merlin_ccopt
 "lib/time_stubs.c": oasis_library_merlin_ccopt
 <lib/merlin.{cma,cmxa}>: oasis_library_merlin_cclib
 "lib/libmerlin_stubs.lib": oasis_library_merlin_cclib
@@ -27,11 +28,9 @@
 "lib/time_stubs.c": pkg_core
 "lib/time_stubs.c": pkg_cstruct
 "lib/time_stubs.c": pkg_dprle
-"lib/time_stubs.c": pkg_netkat
+"lib/time_stubs.c": pkg_frenetic
+"lib/time_stubs.c": pkg_frenetic.async
 "lib/time_stubs.c": pkg_ocamlgraph
-"lib/time_stubs.c": pkg_openflow
-"lib/time_stubs.c": pkg_openflow.async
-"lib/time_stubs.c": pkg_packet
 "lib/time_stubs.c": pkg_str
 "lib/time_stubs.c": pkg_threads
 "lib/time_stubs.c": pkg_topology
@@ -40,38 +39,35 @@
 "lib/Merlin.native": pkg_core
 "lib/Merlin.native": pkg_cstruct
 "lib/Merlin.native": pkg_dprle
-"lib/Merlin.native": pkg_netkat
+"lib/Merlin.native": pkg_frenetic
+"lib/Merlin.native": pkg_frenetic.async
 "lib/Merlin.native": pkg_ocamlgraph
-"lib/Merlin.native": pkg_openflow
-"lib/Merlin.native": pkg_openflow.async
 "lib/Merlin.native": pkg_packet
 "lib/Merlin.native": pkg_str
 "lib/Merlin.native": pkg_threads
 "lib/Merlin.native": pkg_topology
 "lib/Merlin.native": use_merlin
-<lib/*.ml{,i}>: pkg_async
-<lib/*.ml{,i}>: pkg_core
-<lib/*.ml{,i}>: pkg_cstruct
-<lib/*.ml{,i}>: pkg_dprle
-<lib/*.ml{,i}>: pkg_netkat
-<lib/*.ml{,i}>: pkg_ocamlgraph
-<lib/*.ml{,i}>: pkg_openflow
-<lib/*.ml{,i}>: pkg_openflow.async
-<lib/*.ml{,i}>: pkg_packet
-<lib/*.ml{,i}>: pkg_str
-<lib/*.ml{,i}>: pkg_threads
-<lib/*.ml{,i}>: pkg_topology
-<lib/*.ml{,i}>: use_merlin
+<lib/*.ml{,i,y}>: pkg_async
+<lib/*.ml{,i,y}>: pkg_core
+<lib/*.ml{,i,y}>: pkg_cstruct
+<lib/*.ml{,i,y}>: pkg_dprle
+<lib/*.ml{,i,y}>: pkg_frenetic
+<lib/*.ml{,i,y}>: pkg_frenetic.async
+<lib/*.ml{,i,y}>: pkg_ocamlgraph
+<lib/*.ml{,i,y}>: pkg_packet
+<lib/*.ml{,i,y}>: pkg_str
+<lib/*.ml{,i,y}>: pkg_threads
+<lib/*.ml{,i,y}>: pkg_topology
+<lib/*.ml{,i,y}>: use_merlin
 # Executable unittest
 "test/Test.native": pkg_async
 "test/Test.native": pkg_core
 "test/Test.native": pkg_cstruct
 "test/Test.native": pkg_dprle
-"test/Test.native": pkg_netkat
+"test/Test.native": pkg_frenetic
+"test/Test.native": pkg_frenetic.async
 "test/Test.native": pkg_oUnit
 "test/Test.native": pkg_ocamlgraph
-"test/Test.native": pkg_openflow
-"test/Test.native": pkg_openflow.async
 "test/Test.native": pkg_pa_ounit
 "test/Test.native": pkg_pa_ounit.syntax
 "test/Test.native": pkg_packet
@@ -79,20 +75,19 @@
 "test/Test.native": pkg_threads
 "test/Test.native": pkg_topology
 "test/Test.native": use_merlin
-<test/*.ml{,i}>: pkg_async
-<test/*.ml{,i}>: pkg_core
-<test/*.ml{,i}>: pkg_cstruct
-<test/*.ml{,i}>: pkg_dprle
-<test/*.ml{,i}>: pkg_netkat
-<test/*.ml{,i}>: pkg_oUnit
-<test/*.ml{,i}>: pkg_ocamlgraph
-<test/*.ml{,i}>: pkg_openflow
-<test/*.ml{,i}>: pkg_openflow.async
-<test/*.ml{,i}>: pkg_pa_ounit
-<test/*.ml{,i}>: pkg_pa_ounit.syntax
-<test/*.ml{,i}>: pkg_packet
-<test/*.ml{,i}>: pkg_str
-<test/*.ml{,i}>: pkg_threads
-<test/*.ml{,i}>: pkg_topology
-<test/*.ml{,i}>: use_merlin
+<test/*.ml{,i,y}>: pkg_async
+<test/*.ml{,i,y}>: pkg_core
+<test/*.ml{,i,y}>: pkg_cstruct
+<test/*.ml{,i,y}>: pkg_dprle
+<test/*.ml{,i,y}>: pkg_frenetic
+<test/*.ml{,i,y}>: pkg_frenetic.async
+<test/*.ml{,i,y}>: pkg_oUnit
+<test/*.ml{,i,y}>: pkg_ocamlgraph
+<test/*.ml{,i,y}>: pkg_pa_ounit
+<test/*.ml{,i,y}>: pkg_pa_ounit.syntax
+<test/*.ml{,i,y}>: pkg_packet
+<test/*.ml{,i,y}>: pkg_str
+<test/*.ml{,i,y}>: pkg_threads
+<test/*.ml{,i,y}>: pkg_topology
+<test/*.ml{,i,y}>: use_merlin
 # OASIS_STOP
