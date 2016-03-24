@@ -5,7 +5,6 @@ Synopsis:    A language for network management
 Authors:
 License:     LGPL
 Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
-
 BuildTools: ocamlbuild
 
 XStdFilesREADME: False
@@ -25,6 +24,8 @@ Library merlin
     str,
     async,
     core,
+    sexplib,
+    sexplib.syntax,
     cstruct,
     dprle,
     threads,

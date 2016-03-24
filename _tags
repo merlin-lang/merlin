@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b34688667b40320396b3d6c45bb5ab48)
+# DO NOT EDIT (digest: e5d91c7b6b370bf7e65dcd6628762206)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -31,6 +31,8 @@ true: annot, bin_annot
 "lib/time_stubs.c": pkg_frenetic
 "lib/time_stubs.c": pkg_frenetic.async
 "lib/time_stubs.c": pkg_ocamlgraph
+"lib/time_stubs.c": pkg_sexplib
+"lib/time_stubs.c": pkg_sexplib.syntax
 "lib/time_stubs.c": pkg_str
 "lib/time_stubs.c": pkg_threads
 "lib/time_stubs.c": pkg_topology
@@ -43,6 +45,8 @@ true: annot, bin_annot
 "lib/Merlin.native": pkg_frenetic.async
 "lib/Merlin.native": pkg_ocamlgraph
 "lib/Merlin.native": pkg_packet
+"lib/Merlin.native": pkg_sexplib
+"lib/Merlin.native": pkg_sexplib.syntax
 "lib/Merlin.native": pkg_str
 "lib/Merlin.native": pkg_threads
 "lib/Merlin.native": pkg_topology
@@ -55,6 +59,8 @@ true: annot, bin_annot
 <lib/*.ml{,i,y}>: pkg_frenetic.async
 <lib/*.ml{,i,y}>: pkg_ocamlgraph
 <lib/*.ml{,i,y}>: pkg_packet
+<lib/*.ml{,i,y}>: pkg_sexplib
+<lib/*.ml{,i,y}>: pkg_sexplib.syntax
 <lib/*.ml{,i,y}>: pkg_str
 <lib/*.ml{,i,y}>: pkg_threads
 <lib/*.ml{,i,y}>: pkg_topology
@@ -71,6 +77,8 @@ true: annot, bin_annot
 "test/Test.native": pkg_pa_ounit
 "test/Test.native": pkg_pa_ounit.syntax
 "test/Test.native": pkg_packet
+"test/Test.native": pkg_sexplib
+"test/Test.native": pkg_sexplib.syntax
 "test/Test.native": pkg_str
 "test/Test.native": pkg_threads
 "test/Test.native": pkg_topology
@@ -86,6 +94,8 @@ true: annot, bin_annot
 <test/*.ml{,i,y}>: pkg_pa_ounit
 <test/*.ml{,i,y}>: pkg_pa_ounit.syntax
 <test/*.ml{,i,y}>: pkg_packet
+<test/*.ml{,i,y}>: pkg_sexplib
+<test/*.ml{,i,y}>: pkg_sexplib.syntax
 <test/*.ml{,i,y}>: pkg_str
 <test/*.ml{,i,y}>: pkg_threads
 <test/*.ml{,i,y}>: pkg_topology

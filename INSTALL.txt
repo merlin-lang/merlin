@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: a676bcd04df6ce7cf649eab234ba2c42) *)
+(* DO NOT EDIT (digest: 1285f46d253bd5e150b11c5e9db12fc5) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -15,6 +15,7 @@ In order to compile this package, you will need:
 * findlib
 * async for library merlin
 * core for library merlin
+* sexplib for library merlin
 * cstruct
 * dprle for library merlin
 * ocamlgraph
