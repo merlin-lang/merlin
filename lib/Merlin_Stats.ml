@@ -1,4 +1,4 @@
-open Network_Common
+open Frenetic_Network
 open Merlin_Globals
 open Merlin_Topology
 

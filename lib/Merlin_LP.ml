@@ -1,5 +1,5 @@
 (* open Graph *)
-open Network_Common
+open Frenetic_Network
 open Merlin_NFA
 open Merlin_Types
 open Merlin_Gurobi

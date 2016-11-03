@@ -1,4 +1,3 @@
-open OUnit
 open Merlin_FrontEnd
 
 let test_queue input =
@@ -19,4 +18,4 @@ let test_queue input =
 
 
 (* (\* These are expected to pass *\) *)
-TEST "./examples/min/min.mln" = test_queue "min" = true
+let%test "./examples/min/min.mln" = test_queue "min" = true

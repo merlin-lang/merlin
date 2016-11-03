@@ -1,6 +1,5 @@
-open OUnit
-open Packet
-open Network_Common
+open Frenetic_Packet
+open Frenetic_Network
 
 open Merlin_FrontEnd
 open Merlin_Types
@@ -52,18 +51,18 @@ let test_solve input =
 
 
 
-(* TEST "./examples/speed/speed.mln" = test_solve "speed" = true *)
-TEST "./examples/simple/simple.mln" = test_solve "simple" = true
-TEST "./examples/sleuth/sleuth.mln" = test_solve "sleuth" = true
-TEST "./examples/hadoop/hadoop.mln" = test_solve "hadoop" = true
-TEST "./examples/codehash/codehash.mln" = test_solve "codehash" = true
-TEST "./examples/defense/defense.mln" = test_solve "defense" = true
-TEST "./examples/function/function.mln" = test_solve "function" = true
-TEST "./examples/order/order.mln" = test_solve "order" = true
-TEST "./examples/dpi_start/dpi_start.mln" = test_solve "dpi_end" = true
-TEST "./examples/dpi_end/dpi_end.mln" = test_solve "dpi_end" = true
-TEST "./examples/min/min.mln" = test_solve "min" = true
-TEST "./examples/rateless/rateless.mln" = test_solve "rateless" = true
-TEST "./examples/max/max.mln" = test_solve "max" = true
-TEST "./examples/foreach/foreach.mln" = test_solve "foreach" = true
-TEST "./examples/inline-set/inline-set.mln" = test_solve "inline-set" = true
+(* let%test "./examples/speed/speed.mln" = test_solve "speed" = true *)
+let%test "./examples/simple/simple.mln" = test_solve "simple" = true
+let%test "./examples/sleuth/sleuth.mln" = test_solve "sleuth" = true
+let%test "./examples/hadoop/hadoop.mln" = test_solve "hadoop" = true
+let%test "./examples/codehash/codehash.mln" = test_solve "codehash" = true
+let%test "./examples/defense/defense.mln" = test_solve "defense" = true
+let%test "./examples/function/function.mln" = test_solve "function" = true
+let%test "./examples/order/order.mln" = test_solve "order" = true
+let%test "./examples/dpi_start/dpi_start.mln" = test_solve "dpi_end" = true
+let%test "./examples/dpi_end/dpi_end.mln" = test_solve "dpi_end" = true
+let%test "./examples/min/min.mln" = test_solve "min" = true
+let%test "./examples/rateless/rateless.mln" = test_solve "rateless" = true
+let%test "./examples/max/max.mln" = test_solve "max" = true
+let%test "./examples/foreach/foreach.mln" = test_solve "foreach" = true
+let%test "./examples/inline-set/inline-set.mln" = test_solve "inline-set" = true

@@ -1,9 +1,8 @@
-open OUnit
-open SDN_Types
+open Frenetic_OpenFlow
 open Merlin_Types
 open Merlin_Generate
 
-TEST "reminder to write a test" =
+let%test "reminder to write a test" =
   false
 
 (*
@@ -19,7 +18,7 @@ let set_vlan action value = match action with
       | _ -> false end
   | _ -> false
 
-TEST "openflow queueless forward" =
+let%test "openflow queueless forward" =
     let ip = Test (SDN_Types.IP4Src, VInt.Int32 (Int32.of_int 111)) in
     let path = [(VInt.Int32 1l, VInt.Int32 0l, VInt.Int32 2l,
                  None,IngressEgress)] in
@@ -29,7 +28,7 @@ TEST "openflow queueless forward" =
     out = OutputPort (VInt.Int32 2l) && List.length ofs = 1
 
 
-TEST "openflow queueless tag untag" =
+let%test "openflow queueless tag untag" =
     let ip = Test (SDN_Types.IP4Src, VInt.Int32 (Int32.of_int 111)) in
     let path = [(VInt.Int32 1l, VInt.Int32 0l, VInt.Int32 2l,None,Ingress)
                ;(VInt.Int32 1l, VInt.Int32 1l, VInt.Int32 2l,None,Egress)] in
@@ -50,7 +49,7 @@ TEST "openflow queueless tag untag" =
 
     tag && untag && List.length ofs = 2
 
-TEST "openflow queueless tag fwd untag" =
+let%test "openflow queueless tag fwd untag" =
     let ip = Test (SDN_Types.IP4Src, VInt.Int32 (Int32.of_int 111)) in
     let path = [(VInt.Int32 1l, VInt.Int32 0l, VInt.Int32 2l,None,Ingress)
                ;(VInt.Int32 1l, VInt.Int32 1l, VInt.Int32 2l,None,Intermediate)

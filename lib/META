@@ -1,9 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: edfe418b4faa7a0d88f7fb7e24146b35)
+# DO NOT EDIT (digest: 4c830672ad783ce45c095df06649a26f)
 version = "0.1"
 description = "A language for network management"
 requires =
-"str async core cstruct dprle netkat threads packet ocamlgraph openflow openflow.async topology"
+"str async core cstruct dprle frenetic frenetic.async ocamlgraph threads"
 archive(byte) = "merlin.cma"
 archive(byte, plugin) = "merlin.cma"
 archive(native) = "merlin.cmxa"

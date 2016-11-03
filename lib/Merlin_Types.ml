@@ -1,8 +1,8 @@
-open Packet
+open Frenetic_Packet
 open Merlin_Util
-open Network_Common
-open SDN_Types
-
+open Frenetic_Network
+module SDN_Types = Frenetic_OpenFlow
+open Frenetic_OpenFlow
 
 (* Predicate and OpenFlow interop  *)
 type queueId = SDN_Types.queueId
@@ -14,7 +14,7 @@ type rate = Rate of int64 * int64
 type action = SDN_Types.action
 
 type pred =
-  | Test of NetKAT_Types.header_val
+  | Test of Frenetic_NetKAT.header_val
   | Or of pred * pred
   | And of pred * pred
   | Not of pred

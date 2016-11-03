@@ -1,4 +1,3 @@
-open OUnit
 open Merlin_FrontEnd
 
 let test_tc input =
@@ -19,4 +18,4 @@ let test_tc input =
 
 
 (* (\* These are expected to pass *\) *)
-TEST "./examples/max/max.mln" = test_tc "max" = true
+let%test "./examples/max/max.mln" = test_tc "max" = true

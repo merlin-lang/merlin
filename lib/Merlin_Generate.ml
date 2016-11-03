@@ -1,6 +1,6 @@
-open Packet
-open SDN_Types
-open Network_Common
+open Frenetic_Packet
+open Frenetic_OpenFlow
+open Frenetic_Network
 open Merlin_TC
 open Merlin_NFA
 open Merlin_Util
@@ -11,7 +11,7 @@ open Merlin_Globals
 open Merlin_BigGraph
 open Merlin_Dictionaries
 
-module NK = NetKAT_Types
+module NK = Frenetic_NetKAT
 
 let tag_cell = ref 0
 
@@ -126,7 +126,7 @@ module Flow = struct
 
   (* TODO(rjs)  topo_node in fws is node *)
   (* TODO(rjs)  Is this dead code now? *)
-  let mk_click (t:topo) (is: (vertex * string list) list) : (Packet.nwAddr * string) list =
+  let mk_click (t:topo) (is: (vertex * string list) list) : (Frenetic_Packet.nwAddr * string) list =
     List.map (fun (n, ls) ->
       let label = Net.Topology.vertex_to_label t n in
       let ip = Node.ip label in
@@ -136,7 +136,7 @@ module Flow = struct
 
 
   let to_machine (t:topo) ((pred,path):flow)
-      : (step list * swqconf list * (nwAddr * string) list * (Packet.nwAddr * string) list ) =
+      : (step list * swqconf list * (nwAddr * string) list * (Frenetic_Packet.nwAddr * string) list ) =
     let tag = fresh_tag () in
     List.fold_left (fun (ofs,qcs,tcs,clicks) fwd ->
       let open Node in
@@ -222,8 +222,8 @@ module Gather = struct
     ) qcls;
     swtbl
 
-  let tcs (tcls : (Packet.nwAddr * string) list)
-      : (Packet.nwAddr, string list) Hashtbl.t =
+  let tcs (tcls : (Frenetic_Packet.nwAddr * string) list)
+      : (Frenetic_Packet.nwAddr, string list) Hashtbl.t =
     let tbl = Hashtbl.create (List.length tcls) in
     List.iter (fun (ip,tc) ->
       let ls =
@@ -400,7 +400,7 @@ module Forward(T:TOPOINFO) = struct
 end
 
 let from_flows (topo:topo) (fs: flow list)
-    : (step list * swqconf list * (nwAddr * string) list * (Packet.nwAddr * string) list) =
+    : (step list * swqconf list * (nwAddr * string) list * (Frenetic_Packet.nwAddr * string) list) =
   let start_time = Merlin_Time.time () in
   let steps, qcs, tcs, clicks = List.fold_left (fun (s,q,t,c) flow ->
     let steps, qcs, tcs, clicks = Flow.to_machine topo flow in

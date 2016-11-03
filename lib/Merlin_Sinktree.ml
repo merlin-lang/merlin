@@ -1,9 +1,9 @@
-open Network_Common
+open Frenetic_Network
 open Merlin_NFA
 open Merlin_Types
 open Merlin_Dictionaries
 
-module NK = NetKAT_Types
+module NK = Frenetic_NetKAT
 
 module type TOPO_NFA = sig
   val topo : topo

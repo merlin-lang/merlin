@@ -1,4 +1,4 @@
-open Packet
+open Frenetic_Packet
 open Merlin_Util
 open Merlin_Types
 open Merlin_Pretty

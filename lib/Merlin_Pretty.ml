@@ -1,7 +1,7 @@
 open Format
-open Packet
+open Frenetic_Packet
 open Pervasives
-open Network_Common
+open Frenetic_Network
 open Merlin_Types
 open Merlin_Util
 open Merlin_NFA
@@ -20,7 +20,7 @@ module Pred = struct
     | _ -> apred fmt p
 
   and apred fmt p = 
-    let open NetKAT_Types in 
+    let open Frenetic_NetKAT in 
     match p with
     | Test(Switch n) -> fprintf fmt "@[switch@ =@ %Ld@]" n
     | Test(Location(Physical n)) -> fprintf fmt "@[port@ =@ %ld@]" n

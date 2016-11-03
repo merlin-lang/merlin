@@ -1,5 +1,5 @@
-open Packet
-open Network_Common
+open Frenetic_Packet
+open Frenetic_Network
 
 open Merlin_Util
 open Merlin_Types

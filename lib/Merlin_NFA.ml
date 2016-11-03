@@ -1,5 +1,5 @@
 open Pervasives
-open Network_Common
+open Frenetic_Network
 open Merlin_Util
 open Merlin_Types
 open Merlin_Globals
@@ -192,7 +192,7 @@ module NFA = struct
 
   let eps_eliminate m =
     let qi,qf = 0,1 in
-    let m' = new_nfa_states ~alpha_size:m.alpha_size qi qf in
+    let m' = new_nfa_states qi qf in
     let h_eps = Hashtbl.create 17 in
     let h_r = Hashtbl.create 17 in
     let () =
@@ -241,8 +241,7 @@ module NFA = struct
 
   let of_regex r =
     let open Nfa in
-    let alpha_size = CodeHash.length code_to_symbol in
-    let create () = new_nfa_states ~alpha_size 0 1 in
+    let create () = new_nfa_states 0 1 in
     let rec loop (r:regex) : t =
       match r with
       | AnyChar ->
@@ -273,8 +272,7 @@ module NFA = struct
   let of_topology (t:topo) (p:vertex -> bool)
       : (t * state VertexHash.t * Merlin_Types.symbol VertexHash.t * (state,vertex) Hashtbl.t * vertex SymbolHash.t) =
     let open Node in
-    let alpha_size = CodeHash.length code_to_symbol in
-    let nfa = new_nfa_states ~alpha_size 0 1 in
+    let nfa = new_nfa_states 0 1 in
 
     let num = Net.Topology.num_vertexes t in
 

@@ -1,11 +1,15 @@
-OASISFormat: 0.3
+OASISFormat: 0.4
 Name:        merlin
 Version:     0.1
 Synopsis:    A language for network management
 Authors:
 License:     LGPL
 Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
-
+OCamlVersion: >= 4.01
+AlphaFeatures: 
+  no_automatic_syntax,
+  ocamlbuild_more_args
+XOCamlbuildPluginTags: package(ppx_driver.ocamlbuild)
 BuildTools: ocamlbuild
 
 XStdFilesREADME: False
@@ -27,13 +31,10 @@ Library merlin
     core,
     cstruct,
     dprle,
-    netkat,
-    threads,
-    packet,
+    frenetic,
+    frenetic.async,
     ocamlgraph,
-    openflow,
-    openflow.async,
-    topology
+    threads
   Modules:
     Merlin_Dictionaries,
     Merlin_LPPretty,
@@ -75,10 +76,7 @@ Executable wizard
     str,
     cstruct,
     threads,
-    packet,
-    ocamlgraph,
-    openflow,
-    topology,
+    frenetic,
     merlin
 
 Executable unittest
@@ -88,16 +86,12 @@ Executable unittest
  MainIs:     Test.ml
  CompiledObject: native
  BuildDepends:
-   oUnit,
-   pa_ounit,
-   pa_ounit.syntax,
    str,
    cstruct,
    threads,
-   packet,
-   ocamlgraph,
-   openflow,
-   topology,
+   ppx_jane,
+   ppx_inline_test,
+   frenetic,
    merlin
 
 Test all_tests

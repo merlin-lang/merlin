@@ -1,8 +1,8 @@
-open Network
+open Frenetic_Network
 open Merlin_Util
 open Merlin_Types
 
-module VertexHash = Network_Common.Net.Topology.VertexHash
+module VertexHash = Frenetic_Network.Net.Topology.VertexHash
 
 module CodeHash = Hashtbl.Make(struct
   type t = code

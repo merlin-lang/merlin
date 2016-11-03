@@ -1,10 +1,10 @@
 open Merlin_Types
 open Merlin_Util
 open Merlin_Error
-open SDN_Types
-open Packet
+open Frenetic_OpenFlow
+open Frenetic_Packet
 
-module NK = NetKAT_Types
+module NK = Frenetic_NetKAT
 
 let major = ref 0
 

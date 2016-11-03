@@ -1,7 +1,7 @@
 open Merlin_NFA
 open Merlin_Types
 open Merlin_Dictionaries
-open Network_Common
+open Frenetic_Network
 
 module type TOPO_NFA = sig
   val topo            : topo

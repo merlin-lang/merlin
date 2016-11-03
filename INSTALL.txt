@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 42ea9ff707aa3f356acea1511e97fcf6) *)
+(* DO NOT EDIT (digest: 542915ce4037d5b8ecb1ac71b547fa49) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -11,19 +11,16 @@ Dependencies
 
 In order to compile this package, you will need:
 
-* ocaml for all, test all_tests
+* ocaml (>= 4.01) for all, test all_tests
 * findlib
 * async for library merlin
 * core for library merlin
 * cstruct
 * dprle for library merlin
-* netkat for library merlin
-* packet
-* ocamlgraph
-* openflow
-* topology
-* oUnit for executable unittest
-* pa_ounit for executable unittest
+* frenetic
+* ocamlgraph for library merlin
+* ppx_jane for executable unittest
+* ppx_inline_test for executable unittest
 
 Installing
 ==========

@@ -7,7 +7,7 @@ open Merlin_LPPretty
 open Merlin_LPTypes
 open Merlin_Globals
 open Merlin_BigGraph
-open Network_Common
+open Frenetic_Network
 open Merlin_NFA
 open Merlin_Error
 open Unix
@@ -87,13 +87,13 @@ let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
   let update_vertex_in (n:vertex) (p:portId) (h:hop) =
     try
       let (_,op,_,oh) = VertexHash.find_exn fwd_tbl n in
-      VertexHash.replace fwd_tbl n (p,op,h,oh)
+      VertexHash.set fwd_tbl n (p,op,h,oh)
     with Not_found ->
       VertexHash.add_exn fwd_tbl n (p,0l,h,Nohop) in
   let update_vertex_out (n:vertex) (p:portId) (h:hop) =
     try
       let (ip,_,ih,_) = VertexHash.find_exn fwd_tbl n in
-      VertexHash.replace fwd_tbl n (ip,p,ih,h)
+      VertexHash.set fwd_tbl n (ip,p,ih,h)
     with Not_found ->
       VertexHash.add_exn fwd_tbl n (0l,p,Nohop,h) in
 
@@ -102,7 +102,7 @@ let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
       try VertexHash.find_exn table host
       with Not_found -> StringSet.empty
     in
-    VertexHash.replace table host (StringSet.add f set)
+    VertexHash.set table host (StringSet.add f set)
   in
 
   List.iter (fun (e,a,hop) ->

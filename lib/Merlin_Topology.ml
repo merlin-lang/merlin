@@ -1,6 +1,6 @@
-open Packet
+open Frenetic_Packet
 open Merlin_Types
-open Network_Common
+open Frenetic_Network
 
 module VertexHash = Net.Topology.VertexHash
 
@@ -104,7 +104,7 @@ let switches (t:topo) : Net.Topology.VertexSet.t =
       | _ -> false
   )
 
-let switches_to_ips (t:topo) :  (switchId, Packet.nwAddr) Hashtbl.t =
+let switches_to_ips (t:topo) :  (switchId, Frenetic_Packet.nwAddr) Hashtbl.t =
   let open Net.Topology in
   let tbl = Hashtbl.create (num_vertexes t) in
   let vs = vertexes t in

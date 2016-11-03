@@ -46,6 +46,6 @@ exception Undeclared_host_or_function of string
 
 exception Unknown_location of string
 
-exception Impossible_group_union of SDN_Types.group * SDN_Types.group
+exception Impossible_group_union of Frenetic_OpenFlow.group * Frenetic_OpenFlow.group
 
 exception Unimplementable_tc_predicate of Merlin_Types.pred

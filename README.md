@@ -17,32 +17,35 @@ federated networks.
 
 ## Building Merlin
 
-Merlin must currently be built from source. To build from source, first ensure
-that you've installed all dependencies, which are listed in the `_oasis` file
-under the merlin `Library` sections. To install dependencies that are part of
-the [Frenetic project](http://frenetic-lang.org), you may want to install a
-custom [OPAM](http://opam.ocamlpro.com/) repository maintained that the Frenetic
-project maintains.
+Merlin must currently be built from source. To build from source,
+first ensure that you've installed all dependencies, 
 
-    $ opam repository add frenetic https://github.com/frenetic-lang/opam-bleeding.git
-    $ opam update
+Dependencies
+============
 
-Once that's done, packages that are part of the Frenetic project will be
-installed from the HEAD of their master branch on Github.
+In order to compile Merlin, you will need to install the following
+packages, which are available from `opam`:
 
-If you prefer to install dependencies from source, you may build them from their
-Github repositories:
+* ocaml (>= 4.01) for all, test all_tests
+* findlib
+* async
+* core 
+* cstruct
+* dprle
+* frenetic
+* ocamlgraph
+* ppx_jane 
+* ppx_inline_test
 
-  * [DPRLE](https://github.com/frenetic-lang/dprle)
-  * [OCaml-Packet](https://github.com/frenetic-lang/ocaml-packet)
-  * [OCaml-OpenFlow](https://github.com/frenetic-lang/ocaml-openflow)
-  * [OCaml-Topology](https://github.com/frenetic-lang/ocaml-topology)
-  * [Frenetic](https://github.com/frenetic-lang/frenetic)
+You will also need to install these packages from source:
 
-Install those packages and then build and test Merlin using the following
-commands:
+* [DPRLE](https://github.com/frenetic-lang/dprle)
+* [Frenetic](https://github.com/frenetic-lang/frenetic)
 
-    $ make
-    $ make test
+Building
+==========
+
+1. Run 'make`
+2. Run 'make test'
 
 

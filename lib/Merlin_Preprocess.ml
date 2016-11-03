@@ -5,9 +5,9 @@ open Merlin_Types
 open Merlin_Dictionaries
 open Merlin_Error
 open Merlin_NFA
-open SDN_Types
+open Frenetic_OpenFlow
 
-module NK = NetKAT_Types
+module NK = Frenetic_NetKAT
 
 (* Bookkeeping for Presburger variable generation *)
 let var_num = ref 0

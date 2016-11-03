@@ -1,10 +1,10 @@
 %{
-  open Packet
+  open Frenetic_Packet
   open Merlin_Types
   open Merlin_NFA
   open Merlin_Dictionaries
   open Merlin_LPTypes
-  open SDN_Types
+  open Frenetic_OpenFlow
   open Merlin_Error
 
   let hex_of_int len n =
@@ -268,39 +268,39 @@ xpredicate:
 
 field_match:
   | SRCMAC EQUALS MACADDR
-      { let _,m = $3 in Test (NetKAT_Types.EthSrc m) }
+      { let _,m = $3 in Test (Frenetic_NetKAT.EthSrc m) }
   | DSTMAC EQUALS MACADDR
-      { let _,m = $3 in Test (NetKAT_Types.EthDst m) }
+      { let _,m = $3 in Test (Frenetic_NetKAT.EthDst m) }
   | FRAMETYPE EQUALS frametype
-      { Test (NetKAT_Types.EthType $3) }
+      { Test (Frenetic_NetKAT.EthType $3) }
   | VLAN EQUALS INT64
-      { let _,i = $3 in Test (NetKAT_Types.Vlan (Int64.to_int i)) }
+      { let _,i = $3 in Test (Frenetic_NetKAT.Vlan (Int64.to_int i)) }
   | VLANPCP EQUALS INT64
-      { let _,i = $3 in Test (NetKAT_Types.VlanPcp (Int64.to_int i)) }
+      { let _,i = $3 in Test (Frenetic_NetKAT.VlanPcp (Int64.to_int i)) }
   | SRCIP EQUALS IPADDR
-      { let _,i = $3 in And (Test (NetKAT_Types.EthType 0x0800),
-                             Test (NetKAT_Types.IP4Src (Int64.to_int32 i, Int32.of_int 32))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.EthType 0x0800),
+                             Test (Frenetic_NetKAT.IP4Src (Int64.to_int32 i, Int32.of_int 32))) }
   | DSTIP EQUALS IPADDR
-      { let _,i = $3 in And (Test (NetKAT_Types.EthType 0x0800),
-                             Test (NetKAT_Types.IP4Dst (Int64.to_int32 i, Int32.of_int 32))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.EthType 0x0800),
+                             Test (Frenetic_NetKAT.IP4Dst (Int64.to_int32 i, Int32.of_int 32))) }
   | SRCIP EQUALS INT64
-      { let _,i = $3 in And (Test (NetKAT_Types.EthType 0x0800),
-                             Test (NetKAT_Types.IP4Src (Int64.to_int32 i, Int32.of_int 32))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.EthType 0x0800),
+                             Test (Frenetic_NetKAT.IP4Src (Int64.to_int32 i, Int32.of_int 32))) }
   | DSTIP EQUALS INT64
-      { let _,i = $3 in And (Test (NetKAT_Types.EthType 0x0800),
-                             Test (NetKAT_Types.IP4Dst (Int64.to_int32 i, Int32.of_int 32))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.EthType 0x0800),
+                             Test (Frenetic_NetKAT.IP4Dst (Int64.to_int32 i, Int32.of_int 32))) }
   | SRCIP IN set
-      { let _,i = $3 in Test (NetKAT_Types.IP4Src (Int64.to_int32 i, Int32.of_int 32)) }
+      { let _,i = $3 in Test (Frenetic_NetKAT.IP4Src (Int64.to_int32 i, Int32.of_int 32)) }
   | DSTIP IN set
-      { let _,i = $3 in Test (NetKAT_Types.IP4Dst (Int64.to_int32 i, Int32.of_int 32)) }
+      { let _,i = $3 in Test (Frenetic_NetKAT.IP4Dst (Int64.to_int32 i, Int32.of_int 32)) }
   | PROTOCOLTYPE EQUALS protocoltype
-      { Test (NetKAT_Types.IPProto $3) }
+      { Test (Frenetic_NetKAT.IPProto $3) }
   | TCPSRCPORT EQUALS INT64
-      { let _,i = $3 in And (Test (NetKAT_Types.IPProto 6),
-                             Test (NetKAT_Types.TCPSrcPort (Int64.to_int i))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.IPProto 6),
+                             Test (Frenetic_NetKAT.TCPSrcPort (Int64.to_int i))) }
   | TCPDSTPORT EQUALS INT64
-      { let _,i = $3 in And (Test (NetKAT_Types.IPProto 6),
-                             Test (NetKAT_Types.TCPDstPort (Int64.to_int i))) }
+      { let _,i = $3 in And (Test (Frenetic_NetKAT.IPProto 6),
+                             Test (Frenetic_NetKAT.TCPDstPort (Int64.to_int i))) }
 
 frametype :
   | IP

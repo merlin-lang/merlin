@@ -1,4 +1,3 @@
-open OUnit
 open Merlin_FrontEnd
 
 let test_click input expected =
@@ -20,6 +19,6 @@ let test_click input expected =
 
 
 (* (\* These are expected to pass *\) *)
-TEST "./examples/dpi_start/dpi_start.mln" = test_click "dpi_start" 1 = true
-TEST "./examples/dpi_end/dpi_end.mln" = test_click "dpi_end" 1 = true
-TEST "./examples/function/function.mln" = test_click "function" 1 = true
+let%test "./examples/dpi_start/dpi_start.mln" = test_click "dpi_start" 1 = true
+let%test "./examples/dpi_end/dpi_end.mln" = test_click "dpi_end" 1 = true
+let%test "./examples/function/function.mln" = test_click "function" 1 = true

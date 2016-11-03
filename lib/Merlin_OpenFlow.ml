@@ -1,16 +1,16 @@
-open SDN_Types
+open Frenetic_OpenFlow
 open Pattern 
 open Merlin_Types
 open Merlin_Error
 
-module NK = NetKAT_Types
+module NK = Frenetic_NetKAT
 
 type pattern = Pattern.t
 let all_pattern = match_all
 
 exception Empty_pat
 
-let mk_flow (pat:pattern) (group:group) : SDN_Types.flow =
+let mk_flow (pat:pattern) (group:group) : Frenetic_OpenFlow.flow =
   { pattern = pat;
     action = group;
     cookie = 0L;
