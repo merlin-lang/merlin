@@ -1,0 +1,2 @@
+foreach (s,d) : cross({h1}, {h2})
+* ->  s1 at max(50 Mbps);
