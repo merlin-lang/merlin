@@ -42,10 +42,17 @@ You will also need to install these packages from source:
 * [DPRLE](https://github.com/frenetic-lang/dprle)
 * [Frenetic](https://github.com/frenetic-lang/frenetic)
 
+Finally, you will need to install the Gurobi Optimizer:
+
+* http://www.gurobi.com/index
+
 Building
 ==========
 
 1. Run 'make`
 2. Run 'make test'
 
+Example
+==========
 
+$ ./Merlin.native -topo examples/min/min.dot examples/min/min.mln 
