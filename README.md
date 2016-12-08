@@ -55,4 +55,4 @@ Building
 Example
 ==========
 
-$ ./Merlin.native -topo examples/min/min.dot examples/min/min.mln 
+$ ./Merlin.native -topo examples/min/min.dot examples/min/min.mln -verbose
