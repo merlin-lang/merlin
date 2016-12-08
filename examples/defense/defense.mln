@@ -1,0 +1,4 @@
+fire1 := {h1 ; h2} ;
+fire2 := {h1 ; h2} ;
+foreach (s,d) : cross({h1}, {h2})
+* ->  ( .* fire1 .* fire2 .* ) | ( .* fire2 .* fire1 .* )  at min(1 Bps);
