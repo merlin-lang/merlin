@@ -17,30 +17,61 @@ federated networks.
 
 ## Building Merlin
 
-Merlin must currently be built from source. To build from source,
-first ensure that you've installed all dependencies, 
+Merlin must currently be built from source. Merlin is written
+in [OCaml](https://ocaml.org) and uses
+the [OCaml Package Manager (OPAM)][https://opam.ocaml.org/] to install
+dependencies. It is also dependent
+on [DPRLE](https://github.com/frenetic-lang/dprle)
+and [Frenetic](https://github.com/frenetic-lang/frenetic) which must be built
+from source.
+
 
 Dependencies
 ============
 
-In order to compile Merlin, you will need to install the following
-packages, which are available from `opam`:
+First [install OPAM](https://opam.ocaml.org/doc/Install.html) using the
+instructions for your operating system. Then, set up a proper OCaml environment
+by running the following commands:
 
-* ocaml (>= 4.01) for all, test all_tests
-* findlib
-* async
-* core 
-* cstruct
-* dprle
-* frenetic
-* ocamlgraph
-* ppx_jane 
-* ppx_inline_test
+```
+opam init
+eval `opam config env`
+opam switch install 4.03.0
+eval `opam config env`
+```
 
-You will also need to install these packages from source:
+In order to compile Merlin, you will need to install the relevant dependencies
+via OPAM using the following command. These are the combined dependencies for
+Merlin, Frenetic and DPRLE (described below):
 
-* [DPRLE](https://github.com/frenetic-lang/dprle)
-* [Frenetic](https://github.com/frenetic-lang/frenetic)
+```
+opam install ocamlfind oasis core fieldslib cmdliner cstruct \
+     async_extended async_parallel \
+     menhir sexplib sedlex ppx_import \
+     ulex ipaddr tcpip base64 cohttp \
+     yojson mparser ocamlgraph quickcheck ounit
+```
+
+You will also need to install [DPRLE](https://github.com/frenetic-lang/dprle)
+and [Frenetic](https://github.com/frenetic-lang/frenetic) from source.
+
+To install DPRLE:
+
+```
+git clone https://github.com/frenetic-lang/dprle.git
+cd dprle
+make
+make install
+```
+
+To install Frenetic:
+
+```
+git clone https://github.com/frenetic-lang/frenetic.git
+cd frenetic
+make
+make install
+```
 
 Finally, you will need to install the Gurobi Optimizer:
 
