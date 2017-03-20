@@ -5,7 +5,7 @@ Synopsis:    A language for network management
 Authors:
 License:     LGPL
 Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
-OCamlVersion: >= 4.01
+OCamlVersion: >= 4.03
 AlphaFeatures: 
   no_automatic_syntax,
   ocamlbuild_more_args

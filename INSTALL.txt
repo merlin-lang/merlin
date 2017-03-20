@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 542915ce4037d5b8ecb1ac71b547fa49) *)
+(* DO NOT EDIT (digest: 3b9f04adf0e036f18f5112312ff45911) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -11,7 +11,7 @@ Dependencies
 
 In order to compile this package, you will need:
 
-* ocaml (>= 4.01) for all, test all_tests
+* ocaml (>= 4.03) for all, test all_tests
 * findlib
 * async for library merlin
 * core for library merlin
