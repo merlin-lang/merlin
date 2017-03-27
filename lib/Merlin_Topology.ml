@@ -54,7 +54,7 @@ let remove_hosts (n:topo) : (vertex VertexHash.t  * vertex list VertexHash.t * t
       | Switch,Switch -> let n', e = add_edge acc s sp edge_label d dp in n'
       | Switch,_ ->
         let n',v = add_vertex acc (vertex_to_label n s) in
-        VertexHash.replace host_to_switch d v;
+        VertexHash.set host_to_switch d v;
         VertexHash.add_multi switch_to_host v d;
         n'
       | _,Switch ->
@@ -129,7 +129,7 @@ let map_endpoints (t:topo) =
     let d' = Node.device (vertex_to_label t d) in
     match s',d' with
       | Switch,Host ->
-        VertexHash.replace host_to_switch d s;
+        VertexHash.set host_to_switch d s;
         VertexHash.add_multi switch_to_hosts s d
       | _ -> ()
   ) ;

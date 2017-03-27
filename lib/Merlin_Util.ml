@@ -24,7 +24,7 @@ let filter_none lst = filter_map (fun x -> x) lst
 let load_file f =
   let ic = open_in f in
   let n = in_channel_length ic in
-  let s = String.create n in
+  let s = Bytes.create n in
   really_input ic s 0 n;
   close_in ic;
   (s)
@@ -86,7 +86,7 @@ let local_bind_to port =
   socket
 
 let recv_all socket =
-    let buffer = String.create 512 in
+    let buffer = Bytes.create 512 in
     let rec _readall accum =
         try
             let count = (recv socket buffer 0 512 []) in
@@ -105,7 +105,7 @@ let send_all socket str =
   _sendall socket str 0 (String.length str)
 
 let rec recv_till socket accum delim =
-  let buffer = String.create 512 in
+  let buffer = Bytes.create 512 in
   try
     let count = (recv socket buffer 0 512 []) in
     if count = 0 then

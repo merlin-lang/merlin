@@ -50,7 +50,7 @@ let get_shortest_path t s d tbl len =
         NPH.replace nodes_to_paths (src,current) (List.rev p')
     in
 
-    VertexHash.iter previous ~f:(fun ~key:node ~data:_ ->
+    VertexHash.iteri previous ~f:(fun ~key:node ~data:_ ->
       if node = src then ()
       else if NPH.mem nodes_to_paths (src,node) then ()
       else mk_path node
