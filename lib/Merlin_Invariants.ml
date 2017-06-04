@@ -39,7 +39,10 @@ let single_preceding_accept_state (nfa:NFA.t) : invariant =
       then true else raise Multiple_preceding_states in
     Invariant(name, single_preceding, None)
   with
-    | Multiple_preceding_states -> Invariant (name,false, Some "Multiple preceding states")
+  | Not_found ->
+    Invariant( name, false, Some "No state preceding the accept state" )
+  | Multiple_preceding_states ->
+    Invariant( name,false, Some "Multiple states preceding the accept state" )
 
 (* This invariant assumes that the "single preceding accept state" invariant
    holds. In that cases, the number of incoming transitions should be equal to

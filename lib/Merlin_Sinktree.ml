@@ -142,8 +142,13 @@ module Make (S:TOPO_NFA) = struct
       let preds = Hashtbl.find backmap final in
       Hashset.choose preds in
 
-    let Invariant(_,inv,_) = Merlin_Invariants.single_preceding_accept_state nfa in
-    assert inv;
+    let Invariant(name,inv,msg) = Merlin_Invariants.single_preceding_accept_state nfa in
+
+    if not inv then ( match msg with
+      | None -> failwith (Printf.sprintf "Invariant '%s' not satisfied" name)
+      | Some m ->
+        failwith (Printf.sprintf "Invariant '%s' not satisfied: %s" name m) );
+
     let root = bfs_root nfa in
     let preds = Hashtbl.find backmap root in
     let rooted_trees = Hashset.fold (fun state acc ->
