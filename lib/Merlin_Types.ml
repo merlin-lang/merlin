@@ -162,8 +162,8 @@ type switchInfo = {
   configure_queues : swqconf list -> unit;
   clear_queues : switchId -> unit;
   flow_table : SDN_Types.flowTable ;
-  reader : SDN_Types.flowTable Async.Std.Pipe.Reader.t ;
-  writer : SDN_Types.flowTable Async.Std.Pipe.Writer.t ;
+  reader : SDN_Types.flowTable Async.Pipe.Reader.t ;
+  writer : SDN_Types.flowTable Async.Pipe.Writer.t ;
 }
 
 (* Types for checking invariants *)

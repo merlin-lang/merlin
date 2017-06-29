@@ -172,7 +172,7 @@ let _ =
         end in
         let module Ctrlr = Merlin_Controller.Make(T) in
         ignore (Ctrlr.start 6633);
-        Core.Std.never_returns (Async.Std.Scheduler.go ())
+        Core.never_returns (Async.Scheduler.go ())
 
       end
 
@@ -211,7 +211,7 @@ let _ =
     end in
     let module Ctrlr = Merlin_Controller.Make(T) in
     ignore (Ctrlr.start 6633);
-    Core.Std.never_returns (Async.Std.Scheduler.go ())
+    Core.never_returns (Async.Scheduler.go ())
 
   | InvariantMode ->
     let topo = parse_topo_file !topo in

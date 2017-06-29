@@ -5,7 +5,7 @@ open Frenetic_OpenFlow
 open Merlin_Types
 open Merlin_QConfig
 
-open Async.Std
+open Async
 
 module OF10 = Frenetic_OpenFlow0x01
 module OF = Frenetic_OpenFlow0x01_Plugin.LowLevel

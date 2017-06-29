@@ -124,7 +124,7 @@ let solve_unguaranteed (stmts:statement list) (t:topo) (mins:int64 StringMap.t)
   end) in
   let start = Merlin_Time.time () in
   let flows = begin
-    let open Core.Std in
+    let open Core in
     match stmts with
       | [] -> []
       | stmts ->
