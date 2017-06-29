@@ -79,20 +79,20 @@ Executable wizard
     frenetic,
     merlin
 
-Executable unittest
- Install: false
- Build$: flag(is_native)
- Path:       test
- MainIs:     Test.ml
- CompiledObject: native
- BuildDepends:
-   str,
-   cstruct,
-   threads,
-   ppx_jane,
-   ppx_inline_test,
-   frenetic,
-   merlin
+# Executable unittest
+#  Install: false
+#  Build$: flag(is_native)
+#  Path:       test
+#  MainIs:     Test.ml
+#  CompiledObject: native
+#  BuildDepends:
+#    str,
+#    cstruct,
+#    threads,
+#    ppx_jane,
+#    ppx_inline_test,
+#    frenetic,
+#    merlin
 
 Test all_tests
  Command: $unittest inline-test-runner dummy

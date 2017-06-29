@@ -1,5 +1,5 @@
 (* Write tests in independent modules, then include them here to run *)
-
+open Core
 open Test_Solve 
 open Test_Regex
 open Test_Merlin_Parser 

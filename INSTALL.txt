@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 3b9f04adf0e036f18f5112312ff45911) *)
+(* DO NOT EDIT (digest: dcf862bbe393998aff96ddf6296a788a) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -19,8 +19,6 @@ In order to compile this package, you will need:
 * dprle for library merlin
 * frenetic
 * ocamlgraph for library merlin
-* ppx_jane for executable unittest
-* ppx_inline_test for executable unittest
 
 Installing
 ==========

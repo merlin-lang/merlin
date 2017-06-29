@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 0a511fdcd8a16103caa90e37a5f94aa4)
+# DO NOT EDIT (digest: 226b679ae37dc05e488c841f43180f86)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -54,30 +54,5 @@ true: annot, bin_annot
 <lib/*.ml{,i,y}>: package(str)
 <lib/*.ml{,i,y}>: package(threads)
 <lib/*.ml{,i,y}>: use_merlin
-# Executable unittest
-"test/Test.native": package(async)
-"test/Test.native": package(core)
-"test/Test.native": package(cstruct)
-"test/Test.native": package(dprle)
-"test/Test.native": package(frenetic)
-"test/Test.native": package(frenetic.async)
-"test/Test.native": package(ocamlgraph)
-"test/Test.native": package(ppx_inline_test)
-"test/Test.native": package(ppx_jane)
-"test/Test.native": package(str)
-"test/Test.native": package(threads)
-"test/Test.native": use_merlin
-<test/*.ml{,i,y}>: package(async)
-<test/*.ml{,i,y}>: package(core)
-<test/*.ml{,i,y}>: package(cstruct)
-<test/*.ml{,i,y}>: package(dprle)
-<test/*.ml{,i,y}>: package(frenetic)
-<test/*.ml{,i,y}>: package(frenetic.async)
-<test/*.ml{,i,y}>: package(ocamlgraph)
-<test/*.ml{,i,y}>: package(ppx_inline_test)
-<test/*.ml{,i,y}>: package(ppx_jane)
-<test/*.ml{,i,y}>: package(str)
-<test/*.ml{,i,y}>: package(threads)
-<test/*.ml{,i,y}>: use_merlin
 # OASIS_STOP
 <test/*.ml{,i}>: pp(ppx-jane -dump-ast -inline-test-lib merlin)
