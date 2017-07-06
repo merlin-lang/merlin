@@ -1,9 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: 4c830672ad783ce45c095df06649a26f)
+# DO NOT EDIT (digest: 35dd29972804d7236175eb5a541f24d2)
 version = "0.1"
 description = "A language for network management"
 requires =
-"str async core cstruct dprle frenetic frenetic.async ocamlgraph threads"
+"str async core mtime mtime.clock.os cstruct dprle frenetic frenetic.async ocamlgraph threads"
 archive(byte) = "merlin.cma"
 archive(byte, plugin) = "merlin.cma"
 archive(native) = "merlin.cmxa"

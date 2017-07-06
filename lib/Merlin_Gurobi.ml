@@ -161,20 +161,20 @@ let call lp =
     (* Write and time file to disk *)
   let lp_start = Merlin_Time.time () in
   Merlin_Util.write_to_file lp_file (Merlin_LPBuffer.buffer_of_lp lp);
-  let lp_stop = Merlin_Time.time () in
-  Merlin_Stats.lp_write := (Int64.sub lp_stop lp_start);
-  if (!verbose) then Printf.printf "LP write time:\t%Ld\n%!" !Merlin_Stats.lp_write;
+  let lp_stop = Merlin_Time.from lp_start in
+  Merlin_Stats.lp_write := Merlin_Time.to_nsecs lp_stop;
+  if (!verbose) then Printf.printf "LP write time:\t%f\n%!" !Merlin_Stats.lp_write;
     (* Run the gurobi command *)
   let start = Merlin_Time.time () in
   let _ = Sys.command cmd in
-  let stop = Merlin_Time.time () in
-  Merlin_Stats.gurobi_soln :=  (Int64.sub stop  start);
-  if (!verbose) then Printf.printf "Gurobi time:\t%Ld\n%!" !Merlin_Stats.gurobi_soln;
+  let stop = Merlin_Time.from start in
+  Merlin_Stats.gurobi_soln := Merlin_Time.to_nsecs stop;
+  if (!verbose) then Printf.printf "Gurobi time:\t%f\n%!" !Merlin_Stats.gurobi_soln;
   (* Read in the solution, keeping only the valid variables *)
   let start = Merlin_Time.time () in
   let soln = read_soln sol_file in
-  let stop = Merlin_Time.time () in
-  Merlin_Stats.soln_read := (Int64.sub stop start) ;
+  let stop = Merlin_Time.from start in
+  Merlin_Stats.soln_read := Merlin_Time.to_nsecs stop;
   soln
 
 let solution_to_flows

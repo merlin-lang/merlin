@@ -142,8 +142,8 @@ let solve_unguaranteed (stmts:statement list) (t:topo) (mins:int64 StringMap.t)
             with Not_found -> None in
           let forwards = F.from_regex regex h_to_s min max in
           (pred,forwards)::acc) end in
-  let stop = Merlin_Time.time () in
-  Merlin_Stats.rless_pathgen := (Int64.sub stop start);
+  let stop = Merlin_Time.from start in
+  Merlin_Stats.rless_pathgen := Merlin_Time.to_nsecs stop;
   flows
 
 
@@ -186,7 +186,7 @@ let solve_sinktree (ap:ast_program) (topo:topo) : flow list =
 
     let start = Merlin_Time.time () in
     let cross_tbl,cross_nfa = ST.cross topo_nfa rx_nfa in
-    Merlin_Stats.sink_cross := Merlin_Time.from start;
+    Merlin_Stats.sink_cross := Merlin_Time.to_nsecs ( Merlin_Time.from start );
     Merlin_Stats.cross_states := NFA.size cross_nfa;
     Merlin_Stats.cross_edges := (NFA.EdgeSet.cardinal (NFA.edges cross_nfa));
 
@@ -201,11 +201,11 @@ let solve_sinktree (ap:ast_program) (topo:topo) : flow list =
     let backmap = NFA.backward_mapping cross_nfa in
     let trees = ST.fast_sink_trees cross_nfa backmap in
     Merlin_Stats.tree_count := List.length trees;
-    Merlin_Stats.sink_trees := Merlin_Time.from start;
+    Merlin_Stats.sink_trees := Merlin_Time.to_nsecs ( Merlin_Time.from start );
 
     (* Calculate and store the average BFS time *)
-    let total = List.fold_left (fun acc (_,_,t,_) -> Int64.add acc t) 0L trees in
-    Merlin_Stats.ave_bfs := Int64.div total (Int64.of_int (List.length trees));
+    let total = List.fold_left (fun acc (_,_,t,_) -> acc +. t) 0.0 trees in
+    Merlin_Stats.ave_bfs := total /. (float_of_int (List.length trees));
     let total = List.fold_left (fun acc (_,_,_,t) -> acc + t) 0 trees in
     Merlin_Stats.bfs_inner_loop := total/ (List.length trees);
 
@@ -223,11 +223,11 @@ let solve_sinktree (ap:ast_program) (topo:topo) : flow list =
       (pred,fwds)::acc
     ) acc trees in
 
-    Merlin_Stats.sink_irgen := Merlin_Time.from irgen_start;
+    Merlin_Stats.sink_irgen := Merlin_Time.to_nsecs ( Merlin_Time.from irgen_start );
 
     flows
   ) [] pols in
-  Merlin_Stats.rless_pathgen := (Int64.sub (Merlin_Time.time ()) start_time);
+  Merlin_Stats.rless_pathgen := Merlin_Time.to_nsecs (Merlin_Time.from start_time);
   flows
 
 let check_invariant (ast:ast_program) (topo:topo) : invariant list =

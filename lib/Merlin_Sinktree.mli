@@ -23,7 +23,7 @@ module type S = sig
   val fast_sink_tree : NFA.t -> NFA.state -> symbol ->
       ((NFA.state, NFA.state Hashset.hashset) Hashtbl.t) -> (topo * int)
   val fast_sink_trees : NFA.t -> (NFA.state, NFA.state Hashset.hashset)
-    Hashtbl.t -> (topo*vertex*int64 * int) list
+    Hashtbl.t -> (topo * vertex * float * int) list
   val generate : topo -> vertex -> Net.Topology.VertexSet.t -> vertex list ->
     forward list
 end

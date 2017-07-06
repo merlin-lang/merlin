@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 226b679ae37dc05e488c841f43180f86)
+# DO NOT EDIT (digest: 3f0a66ff7396003a6e0df0951c1a4a4b)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -16,23 +16,6 @@ true: annot, bin_annot
 "_darcs": not_hygienic
 # Library merlin
 "lib/merlin.cmxs": use_merlin
-<lib/*.ml{,i,y}>: oasis_library_merlin_ccopt
-"lib/time_stubs.c": oasis_library_merlin_ccopt
-<lib/merlin.{cma,cmxa}>: oasis_library_merlin_cclib
-"lib/libmerlin_stubs.lib": oasis_library_merlin_cclib
-"lib/dllmerlin_stubs.dll": oasis_library_merlin_cclib
-"lib/libmerlin_stubs.a": oasis_library_merlin_cclib
-"lib/dllmerlin_stubs.so": oasis_library_merlin_cclib
-<lib/merlin.{cma,cmxa}>: use_libmerlin_stubs
-"lib/time_stubs.c": package(async)
-"lib/time_stubs.c": package(core)
-"lib/time_stubs.c": package(cstruct)
-"lib/time_stubs.c": package(dprle)
-"lib/time_stubs.c": package(frenetic)
-"lib/time_stubs.c": package(frenetic.async)
-"lib/time_stubs.c": package(ocamlgraph)
-"lib/time_stubs.c": package(str)
-"lib/time_stubs.c": package(threads)
 # Executable wizard
 "lib/Merlin.native": package(async)
 "lib/Merlin.native": package(core)
@@ -40,6 +23,8 @@ true: annot, bin_annot
 "lib/Merlin.native": package(dprle)
 "lib/Merlin.native": package(frenetic)
 "lib/Merlin.native": package(frenetic.async)
+"lib/Merlin.native": package(mtime)
+"lib/Merlin.native": package(mtime.clock.os)
 "lib/Merlin.native": package(ocamlgraph)
 "lib/Merlin.native": package(str)
 "lib/Merlin.native": package(threads)
@@ -50,6 +35,8 @@ true: annot, bin_annot
 <lib/*.ml{,i,y}>: package(dprle)
 <lib/*.ml{,i,y}>: package(frenetic)
 <lib/*.ml{,i,y}>: package(frenetic.async)
+<lib/*.ml{,i,y}>: package(mtime)
+<lib/*.ml{,i,y}>: package(mtime.clock.os)
 <lib/*.ml{,i,y}>: package(ocamlgraph)
 <lib/*.ml{,i,y}>: package(str)
 <lib/*.ml{,i,y}>: package(threads)

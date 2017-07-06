@@ -164,9 +164,9 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
       let nfa = NFA.of_regex e in
       let graph,m' = big_graph nfa min v m in
       (m', (graph,nfa)::graphs_nfas)) (StringMap.empty,[]) statements in
-    let bg_stop = Merlin_Time.time () in
-    Merlin_Stats.graph_construct := (Int64.sub bg_stop bg_start);
-    if (!verbose) then Printf.printf "Graph construction time:\t%Ld%!\n" !Merlin_Stats.graph_construct;
+    let bg_stop = Merlin_Time.from bg_start in
+    Merlin_Stats.graph_construct := Merlin_Time.to_nsecs bg_stop;
+    if (!verbose) then Printf.printf "Graph construction time:\t%f%!\n" !Merlin_Stats.graph_construct;
     m,graphs_nfas
 
   let solve (graphs_nfas:(BigGraph.t * NFA.t) list) (phys:topo)  =
@@ -174,30 +174,30 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
 
     let obj_start = Merlin_Time.time () in
     let obj = H.mk_objective phys graphs_nfas in
-    let obj_stop = Merlin_Time.time () in
-    Merlin_Stats.obj_construct := (Int64.sub obj_stop obj_start);
-    if (!verbose) then Printf.printf "Objective construction time:\t%Ld%!\n" !Merlin_Stats.obj_construct;
+    let obj_stop = Merlin_Time.from obj_start in
+    Merlin_Stats.obj_construct := Merlin_Time.to_nsecs obj_stop;
+    if (!verbose) then Printf.printf "Objective construction time:\t%f%!\n" !Merlin_Stats.obj_construct;
 
     let const_start = Merlin_Time.time () in
     let const = H.mk_constraints graphs_nfas phys in
-    let const_stop = Merlin_Time.time () in
-    Merlin_Stats.const_construct := (Int64.sub const_stop const_start);
-    if (!verbose) then Printf.printf "Const construction time:\t%Ld%!\n" !Merlin_Stats.const_construct;
+    let const_stop = Merlin_Time.from const_start in
+    Merlin_Stats.const_construct := Merlin_Time.to_nsecs const_stop;
+    if (!verbose) then Printf.printf "Const construction time:\t%f%!\n" !Merlin_Stats.const_construct;
 
     let bounds_start = Merlin_Time.time () in
     let bounds = H.mk_bounds phys in
-    let bounds_stop = Merlin_Time.time () in
-    Merlin_Stats.bounds_construct :=  (Int64.sub bounds_stop bounds_start);
-    if (!verbose) then Printf.printf "Bounds construction time:\t%Ld%!\n" !Merlin_Stats.bounds_construct;
+    let bounds_stop = Merlin_Time.from bounds_start in
+    Merlin_Stats.bounds_construct :=  Merlin_Time.to_nsecs bounds_stop;
+    if (!verbose) then Printf.printf "Bounds construction time:\t%f%!\n" !Merlin_Stats.bounds_construct;
 
     let types = H.mk_types phys graphs_nfas in
 
     let sos = NoSos in
 
     let lp = LP(obj, const, bounds, types, sos) in
-    let stop = Merlin_Time.time () in
-    Merlin_Stats.lp_construct := (Int64.sub stop  start);
-    if (!verbose) then Printf.printf "LP construction time:\t%Ld%!\n" !Merlin_Stats.lp_construct;
+    let stop = Merlin_Time.from start in
+    Merlin_Stats.lp_construct := Merlin_Time.to_nsecs stop;
+    if (!verbose) then Printf.printf "LP construction time:\t%f%!\n" !Merlin_Stats.lp_construct;
     let size = List.fold_left
       (fun acc (graph,_) ->
         (BigGraph.nb_edges graph) + acc

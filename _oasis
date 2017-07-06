@@ -17,18 +17,12 @@ XStdFilesAUTHORS: False
 
 Library merlin
   Path: lib
-  CSources:
-    time_stubs.c
-  if system(linux)
-    CCLib:
-      -lrt
-  if system(macosx)
-    CCOpt:
-      -Wno-unused-command-line-argument-hard-error-in-future
   BuildDepends:
     str,
     async,
     core,
+    mtime,
+    mtime.clock.os,
     cstruct,
     dprle,
     frenetic,

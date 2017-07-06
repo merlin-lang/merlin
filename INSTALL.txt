@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: dcf862bbe393998aff96ddf6296a788a) *)
+(* DO NOT EDIT (digest: 86793e42da0cd1903237c69ccea0223d) *)
 
 This is the INSTALL file for the merlin distribution.
 
@@ -15,6 +15,7 @@ In order to compile this package, you will need:
 * findlib
 * async for library merlin
 * core for library merlin
+* mtime for library merlin
 * cstruct
 * dprle for library merlin
 * frenetic

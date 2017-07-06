@@ -386,16 +386,16 @@ module Forward(T:TOPOINFO) = struct
       let t',p_src,p_dst = Merlin_Topology.pad_topo T.topo in
       let cross_start = Merlin_Time.time () in
       let g,n_src,n_dst = CrossGraph.cross r' T.topo in
-      let cross_stop = Merlin_Time.time () in
-      Printf.printf "Cross time: %Ld (nsec)\n" (Int64.sub cross_stop cross_start);
-      Printf.printf "Cross time: %Ld (sec)\n" (Merlin_Time.to_secs (Int64.sub cross_stop cross_start));
+      let cross_time = Merlin_Time.from cross_start in
+      Printf.printf "Cross time: %f (nsec)\n" (Merlin_Time.to_nsecs cross_time);
+      Printf.printf "Cross time: %f (sec)\n" (Merlin_Time.to_secs cross_time);
       let src = (n_src,p_src) in
       let dst = (n_dst,p_dst) in
       let sp_start = Merlin_Time.time () in
       let path = CrossGraph.shortest_path g src dst in
-      let sp_stop = Merlin_Time.time () in
-      Printf.printf "Shortest path time: %Ld (nsec)\n" (Int64.sub sp_stop sp_start);
-      Printf.printf "Shortest path time: %Ld (sec)\n" (Merlin_Time.to_secs (Int64.sub sp_stop sp_start));
+      let sp_stop = Merlin_Time.from sp_start in
+      Printf.printf "Shortest path time: %f (nsec)\n" (Merlin_Time.to_nsecs sp_stop);
+      Printf.printf "Shortest path time: %f (sec)\n" (Merlin_Time.to_secs sp_stop);
       from_crosspath path p_src p_dst min max
 end
 
@@ -406,5 +406,5 @@ let from_flows (topo:topo) (fs: flow list)
     let steps, qcs, tcs, clicks = Flow.to_machine topo flow in
     steps::s, qcs::q, tcs::t,clicks::c
   ) ([],[],[],[]) fs in
-  Merlin_Stats.stepgen := Int64.sub (Merlin_Time.time ()) start_time;
+  Merlin_Stats.stepgen := Merlin_Time.to_nsecs( Merlin_Time.from start_time );
   (List.flatten steps, List.flatten qcs, List.flatten tcs, List.flatten clicks)
