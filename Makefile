@@ -1,41 +1,20 @@
-# OASIS_START
-# DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
+build:
+	jbuilder build
+	cp _build/install/default/bin/merlin Merlin.native
 
-SETUP = ocaml setup.ml
+test:
+	jbuilder runtest
 
-build: setup.data
-	$(SETUP) -build $(BUILDFLAGS)
-
-doc: setup.data build
-	$(SETUP) -doc $(DOCFLAGS)
-
-test: setup.data build
-	$(SETUP) -test $(TESTFLAGS)
-
-all:
-	$(SETUP) -all $(ALLFLAGS)
-
-install: setup.data
-	$(SETUP) -install $(INSTALLFLAGS)
-
-uninstall: setup.data
-	$(SETUP) -uninstall $(UNINSTALLFLAGS)
-
-reinstall: setup.data
-	$(SETUP) -reinstall $(REINSTALLFLAGS)
+all: build test
 
 clean:
-	$(SETUP) -clean $(CLEANFLAGS)
+	jbuilder clean
+	rm Merlin.native
 
-distclean:
-	$(SETUP) -distclean $(DISTCLEANFLAGS)
+install:
+	jbuilder install
 
-setup.data:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
+uninstall:
+	jbuilder uninstall
 
-configure:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
-
-.PHONY: build doc test all install uninstall reinstall clean distclean configure
-
-# OASIS_STOP
+.PHONY: build test all install uninstall clean

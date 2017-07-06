@@ -1,0 +1,19 @@
+(jbuild_version 1)
+
+(ocamlyacc (Merlin_Parser))
+(ocamllex (Merlin_Lexer))
+
+(library
+  ((name merlin_lang)
+   (public_name merlin_lang)
+   (libraries (async core cstruct dprle mtime mtime.clock.os
+               frenetic frenetic.async ocamlgraph
+               ppx_sexp_conv ppx_deriving.show))
+  (modules (:standard \ Merlin_Server Merlin_Policy))
+  (preprocess (pps (ppx_jane)))))
+
+(executable
+((name Merlin)
+  (public_name merlin)
+  (libraries (merlin_lang frenetic.async))
+  (modules (:standard \ Merlin_Server Merlin_Policy))))
