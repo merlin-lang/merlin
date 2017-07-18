@@ -3,7 +3,8 @@ build:
 	cp _build/install/default/bin/merlin Merlin.native
 
 test:
-	jbuilder runtest
+	-jbuilder runtest
+	-@cp -r _build/default/test/_build/_tests/ _build/
 
 all: build test
 

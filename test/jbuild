@@ -1,0 +1,13 @@
+(jbuild_version 1)
+
+(executable
+  ((name Test)
+   (libraries (merlin_lang frenetic.async alcotest))
+   (modules (:standard \ Test_Click Test_Generate Test_Queue Test_Regex
+                         Test_Solve Test_TC Test_Topology_Parser))
+   (preprocess (pps (ppx_jane)))))
+
+(alias
+  ((name    runtest)
+   (deps    (Test.exe))
+   (action  (run ${<}))))

@@ -19,6 +19,7 @@ depends: [
   "ppx_jane"
   "ppx_import"
   "ppx_deriving"
+  "ppx_inline_test"
   "sedlex"
   "async"  {>= "0.9.0"}
   "async_extended"
