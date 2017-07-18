@@ -1,4 +1,5 @@
 B ../_build/default/lib
+FLG -ppx "$(opam config var bin)/ppx-jane --as-ppx"
 FLG -open Merlin_lang -w -40 -w -40
 PKG async
 PKG async_extra

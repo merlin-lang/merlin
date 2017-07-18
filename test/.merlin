@@ -1,6 +1,6 @@
 B ../_build/default/lib
 B ../_build/default/test
-FLG -ppx "../_build/default/.ppx/ppx_jane/ppx.exe --as-ppx"
+FLG -ppx "$(opam config var bin)/ppx-jane --as-ppx"
 FLG -w -40
 PKG alcotest
 PKG astring
