@@ -4,18 +4,21 @@ open Core
 let home =
   match Sys.getenv "MERLIN_HOME" with
   | Some s -> s
-  | None -> match Sys.getenv "HOME" with
-    | Some s -> s ^ "/src/merlin/"
-    | None -> failwith "Cannot find Merlin directory"
+  | None -> Filename.of_parts [ Sys.home_directory () ; "src/merlin"]
+
+let examples =
+  match Sys.getenv "MERLIN_EXAMPLES" with
+  | Some s -> s
+  | None -> Filename.of_parts [home ; "examples"]
 
 let path name ext =
-  Filename.of_parts [ home ; "examples"; name ; name ^ ext ]
+  Filename.of_parts [ examples; name; name ^ ext ]
 
-let test_file ?(speed=`Quick) fn ext name =
+let of_file ?(speed=`Quick) fn ext name =
   let path = path name ext in
   (name, speed, fn path)
 
-let test_example ?(speed=`Slow) fn name =
+let of_example ?(speed=`Slow) fn name =
   let policy = path name ".mln" in
   let topology = path name ".dot" in
   let expected = path name ".exp" in
@@ -24,17 +27,18 @@ let test_example ?(speed=`Slow) fn name =
         let name' = String.concat ~sep:" " [name; n] in
         ( name', speed, t))
 
-let examples = ["min"; "max"; "defense"]
+(* Not sure if these should be automatically pulled from the examples/ subdirectory *)
+let tests = ["min"; "max"; "defense"]
 
 let () =
-  let policy_parsing = List.map examples
-      ~f:(test_file Test_Parser.policy ".mln") in
-  let topology_parsing = List.map examples
-      ~f:(test_file Test_Parser.topology ".dot") in
+  let policy_parsing = List.map tests
+      ~f:(of_file Test_Parser.policy ".mln") in
+  let topology_parsing = List.map tests
+      ~f:(of_file Test_Parser.topology ".dot") in
   let solving = List.join
-      (List.map examples ~f:(test_example Test_Solver.solve)) in
+      (List.map tests ~f:(of_example Test_Solver.solve)) in
 
- Alcotest.run "Parsers"
+ Alcotest.run "Merlin Compiler & Runtime"
     [ "Policy parser" , policy_parsing ;
       "Topology parser", topology_parsing;
       "Solver", solving ]
