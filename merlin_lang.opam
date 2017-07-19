@@ -23,6 +23,7 @@ depends: [
   "sedlex"
   "async"  {>= "0.9.0"}
   "async_extended"
+  "alcotest"
   "cstruct" {>= "1.0.1"}
   "cstruct-async"
   "frenetic" {>= "4.0"}
