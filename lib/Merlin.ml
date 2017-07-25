@@ -155,12 +155,9 @@ let _ =
         | Some unrated ->
           let Policy (stmts, _) = unrated in
           List.map (fun stmt ->
-          let Statement(pred,regex,var) = stmt in
-          let forwards = F.from_regex regex h_to_s None None in
-          (pred,forwards)) stmts in
-
-      (* let rateless_pgm = ASTProgram unguaranteed in *)
-      (* let flows' = solve_sinktree rateless_pgm topo in *)
+              let Statement(pred,regex,var) = stmt in
+              let forwards = F.from_regex regex h_to_s None None in
+              (pred,forwards)) stmts in
 
       let (ofs, qcs, tcs, clicks) = Merlin_Generate.from_flows
         topo (flows@flows') in

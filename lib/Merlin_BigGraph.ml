@@ -147,7 +147,7 @@ module CrossGraph = struct
   module Q = Heap.Imperative(Elt)
   module H = Hashtbl.Make(I.V)
 
-  let cross (r:regex) (t:topo) : (t * NFA.state * NFA.state) =
+  let cross (r:regex) (t:topo) : (t * NFA.StateSet.t * NFA.StateSet.t) =
     let nfa = NFA.of_regex r in
     let links = Net.Topology.edges t in
     let transitions = NFA.edges nfa in
@@ -171,12 +171,15 @@ module CrossGraph = struct
                with Not_found -> ()
         ) (NFA.edge_symbols t)
       ) transitions
-    ) ;
-    let srcstate = NFA.StateSet.choose (NFA.inits nfa) in
-    let dststate = NFA.StateSet.choose (NFA.accept_eps nfa) in
-    (graph,srcstate,dststate)
+      ) ;
+    (graph, NFA.inits nfa, NFA.accept_eps nfa)
+
 
   let shortest_path (g:t) (src:Vertex.t) (dst:Vertex.t) : E.t list =
+    if not ( I.mem_vertex g src ) then
+      Printf.printf "Source is not in the graph\n%!";
+    if not ( I.mem_vertex g dst ) then
+      Printf.printf "Destination is not in the graph\n%!";
 	let ret,_ = Dij.shortest_path g src dst in ret
 
   let spanning_tree_from (g:t) (n:V.t) =

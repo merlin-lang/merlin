@@ -331,12 +331,14 @@ module Forward(T:TOPOINFO) = struct
                 } in
     List.rev (stop::fwds)
 
-  let from_crosspath (path:CrossGraph.E.t list) p_source p_sink min max : forward list =
+  let from_crosspath t (path:CrossGraph.E.t list) p_source p_sink min max :
+    forward list =
+    Printf.printf "Path length is %d\n%!" (List.length path);
     let path' = List.fold_left (fun acc (src,dst) ->
       let open Node in
       let (_,p_src) = src in
       let (_,p_dst) = dst in
-      let e = Net.Topology.find_edge T.topo p_src p_dst in
+      let e = Net.Topology.find_edge t p_src p_dst in
 
       match acc with
       | [] ->
@@ -385,26 +387,43 @@ module Forward(T:TOPOINFO) = struct
       let r' = Merlin_Preprocess.pad_regex r start_symbol end_symbol in
       let t',p_src,p_dst = Merlin_Topology.pad_topo T.topo in
       let cross_start = Merlin_Time.time () in
-      let g,n_src,n_dst = CrossGraph.cross r' t' in (* T.topo in *)
+      let g,n_srcs,n_dsts = CrossGraph.cross r' t' in
       let cross_time = Merlin_Time.from cross_start in
       Printf.printf "Cross time: %f (nsec)\n" (Merlin_Time.to_nsecs cross_time);
       Printf.printf "Cross time: %f (sec)\n" (Merlin_Time.to_secs cross_time);
-      let src = (n_src,p_src) in
-      let dst = (n_dst,p_dst) in
+      let src = NFA.StateSet.fold (fun s acc -> match acc with
+          | Some s -> acc
+          | None ->
+            if CrossGraph.mem_vertex g (s,p_src) then Some (s,p_src) else None
+        ) n_srcs None in
+
+      let dst = NFA.StateSet.fold (fun s acc -> match acc with
+          | Some s -> acc
+          | None -> 
+            if CrossGraph.mem_vertex g (s,p_dst) then Some (s,p_dst) else None
+        ) n_dsts None in
+
+      match src, dst with
+      | Some src, Some dst ->
       let sp_start = Merlin_Time.time () in
       let path = CrossGraph.shortest_path g src dst in
       let sp_stop = Merlin_Time.from sp_start in
-      Printf.printf "Shortest path time: %f (nsec)\n" (Merlin_Time.to_nsecs sp_stop);
-      Printf.printf "Shortest path time: %f (sec)\n" (Merlin_Time.to_secs sp_stop);
-      from_crosspath path p_src p_dst min max
+      Printf.printf "Shortest path time: %f(nsec)\n" (Merlin_Time.to_nsecs sp_stop);
+      Printf.printf "Shortest path time: %f(sec)\n" (Merlin_Time.to_secs sp_stop);
+      from_crosspath t' path p_src p_dst min max
+      | _ -> raise ( Invalid_argument (Merlin_Pretty.string_of_regex r) )
 end
 
 let from_flows (topo:topo) (fs: flow list)
     : (step list * swqconf list * (nwAddr * string) list * (Frenetic_Packet.nwAddr * string) list) =
   let start_time = Merlin_Time.time () in
   let steps, qcs, tcs, clicks = List.fold_left (fun (s,q,t,c) flow ->
-    let steps, qcs, tcs, clicks = Flow.to_machine topo flow in
+      Printf.printf "(%s) -> " (Merlin_Pretty.string_of_pred (fst flow));
+      List.iter (fun f -> Printf.printf " %s "
+                               (Merlin_Pretty.string_of_forward topo f)) (snd flow) ;
+Printf.printf "\n%!";
+      let steps, qcs, tcs, clicks = Flow.to_machine topo flow in
     steps::s, qcs::q, tcs::t,clicks::c
   ) ([],[],[],[]) fs in
-  Merlin_Stats.stepgen := Merlin_Time.to_nsecs( Merlin_Time.from start_time );
+  Merlin_Stats.stepgen :=  Merlin_Time.to_nsecs (Merlin_Time.from start_time);
   (List.flatten steps, List.flatten qcs, List.flatten tcs, List.flatten clicks)
