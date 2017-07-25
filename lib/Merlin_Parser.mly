@@ -367,7 +367,9 @@ regex_char:
       end
     else
       (* i is an abstract location *)
-      Char(get_symbol (i,None))
+      let s = get_symbol (i,None) in
+      Printf.printf "Adding %d -> %s\n" s i;
+      Char(s )
       }
 
   | IPADDR

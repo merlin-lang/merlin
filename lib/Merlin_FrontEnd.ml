@@ -113,8 +113,9 @@ let solve_guaranteed (stmts:statement list) mins maxs v_to_s (topo:topo)
 
 (* TODO(basus) Check the regex type here. The host_to_switch only works for src .* dst *)
 (* TODO(basus) Only do this if we have a .* style regex. Bucket graphs first *)
-let solve_unguaranteed (stmts:statement list) (t:topo) (mins:int64 StringMap.t)
-    (maxs:int64 StringMap.t) : flow list =
+let solve_unguaranteed (stmts:statement list) (t:topo)
+    (* (mins:int64 StringMap.t) (maxs:int64 StringMap.t) *)
+  : flow list =
   let open Merlin_Generate in
   let h_to_s,_,hless = Merlin_Topology.remove_hosts t in
   let module F = Forward(struct
@@ -134,12 +135,13 @@ let solve_unguaranteed (stmts:statement list) (t:topo) (mins:int64 StringMap.t)
              means that there is a problem with the topologies later on. You're
              trying to get node information from a topology that doesn't
              contain that node. *)
-          let max =
-            try Some (StringMap.find var maxs)
-            with Not_found -> None in
-          let min =
-            try Some (StringMap.find var mins)
-            with Not_found -> None in
+          (* let max = *)
+          (*   try Some (StringMap.find var maxs) *)
+          (*   with Not_found -> None in *)
+          (* let min = *)
+          (*   try Some (StringMap.find var mins) *)
+          (*   with Not_found -> None in *)
+          let min,max = None, None in
           let forwards = F.from_regex regex h_to_s min max in
           (pred,forwards)::acc) end in
   let stop = Merlin_Time.from start in
@@ -163,7 +165,7 @@ let solve (ir:policy) (t:topo) : flow list =
   let topo,_,_ = pad_topo t in
 
   let flows  = solve_guaranteed guarantees' mins maxs var_to_stmt topo in
-  let flows' = solve_unguaranteed others t mins maxs in
+  let flows' = solve_unguaranteed others t (* mins maxs *) in
   (flows@flows')
 
 let solve_sinktree (ap:ast_program) (topo:topo) : flow list =

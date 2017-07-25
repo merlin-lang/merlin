@@ -201,3 +201,7 @@ end)
 
 module Int32Map = Mapplus.Make(Int32)
 module Int64Map = Mapplus.Make(Int64)
+
+module Syntax = struct
+
+end
