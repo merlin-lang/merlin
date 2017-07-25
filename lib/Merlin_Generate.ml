@@ -246,26 +246,14 @@ module Forward(T:TOPOINFO) = struct
   let from_path (p:(portId * hop * vertex * portId * hop) list) min max :
       forward list =
     let open Node in
-    let len = List.length p in
-    let _,fwds = List.fold_left (fun (i,acc) (inp,ih,n,outp,oh) ->
-      let label = Net.Topology.vertex_to_label T.topo  n in
-      let fwd_part = { device = (Node.device label, Node.id label)
-                     ; topo_vertex = n ; min = min ; max = max; predicate = None
-                     ; in_port = Some inp ; out_port = Some outp
-                     ; in_hop = Ingress ; out_hop = Egress
-                     ; functions = None ; } in
-      if i = 0 then
-        let oh = if (List.length p) = 1 then Egress else Intermediate in
-        let fwd = {fwd_part with in_hop = Ingress ; out_hop = oh} in
-        (i+1,fwd::acc)
-      else if i = (len - 1) then
-        let fwd = {fwd_part with in_hop = Intermediate ; out_hop = Egress} in
-        (i+1,fwd::acc)
-      else
-        let fwd = {fwd_part with in_hop = Intermediate ; out_hop = Intermediate} in
-        (i+1,fwd::acc)
-    ) (0,[]) p in
-    List.rev fwds
+    List.map (fun (inp,ih,n,outp,oh) ->
+        let label = Net.Topology.vertex_to_label T.topo  n in
+        { device = (Node.device label, Node.id label)
+        ; topo_vertex = n ; min = min ; max = max; predicate = None
+        ; in_port = Some inp ; out_port = Some outp
+        ; in_hop = ih; out_hop = oh
+        ; functions = None ; }
+      ) p
 
   let from_vertexpath ((src,path,dst):(vertex * vertex list * vertex)) min max : forward list =
     let open Node in
@@ -331,27 +319,42 @@ module Forward(T:TOPOINFO) = struct
                 } in
     List.rev (stop::fwds)
 
-  let from_crosspath (path:CrossGraph.E.t list) p_source p_sink min max : forward list =
+  let from_crosspath t (path:CrossGraph.E.t list) min max : forward list =
     let path' = List.fold_left (fun acc (src,dst) ->
-      let open Node in
-      let (_,p_src) = src in
-      let (_,p_dst) = dst in
-      let e = Net.Topology.find_edge T.topo p_src p_dst in
+        let open Node in
+        let open Net.Topology in
+        let (_,p_src) = src in
+        let (_,p_dst) = dst in
+        let p_edge = find_edge t p_src p_dst in
+        let src_name = vertex_to_label t p_src |> name in
+        let dst_name = vertex_to_label t p_dst |> name in
 
-      match acc with
-      | [] ->
-        let src,srcport = Net.Topology.edge_src e in
-        let dst,dstport = Net.Topology.edge_dst e in
-        [ (dstport , Egress, dst, 0l, Nohop)
-        ; (0l, Nohop, src, srcport, Ingress)]
-      | (inp,inh,srcnode,outp,outh)::tl ->
-        let _,srcport = Net.Topology.edge_src e in
-        let dstnode,dstport = Net.Topology.edge_dst e in
-        let src = (inp,inh,srcnode, srcport, Intermediate) in
-        let dst = (dstport,Egress,dstnode, 0l,Nohop) in
-        dst::src::tl
-    ) [] path in
-    from_path path' min max
+        match src_name, dst_name with
+        | "_in_", "_in_"
+        | "_out_", "_out_" -> acc
+        | "_in_", _ ->
+          [( 0l, Nohop, p_dst, 0l, Ingress)]
+        | _, "_out_" ->
+          ( match acc with
+            | [ (pin, _, _, _, _) ] ->
+              [ (pin,Nohop,p_src,0l,Nohop) ]
+            | (pin', _, _, _, _)::(pin,hin,v,pout,_)::tl ->
+              (pin',Egress,p_src,0l,Nohop)::(pin,hin,v,pout,Egress)::tl
+            | [] -> [ (0l,IngressEgress,p_src,0l,IngressEgress) ] )
+        | _ ->
+          ( match acc with
+            | (pin, hin, _, _, hout)::tl ->
+              let src,sport = edge_src p_edge in
+              let dst,dport = edge_dst p_edge in
+              let hout' = if hout = Ingress then Ingress else Intermediate in
+              (dport,hout',dst,0l,Egress)::(pin,hin,src,sport,hout')::tl
+            | [] ->
+              let src,sport = edge_src p_edge in
+              let dst,dport = edge_dst p_edge in
+              [ (dport,Intermediate,dst,0l,Egress);(0l,Ingress,src,sport,Intermediate) ]
+          )
+      ) [] path in
+    from_path (List.rev path') min max
 
   let from_regex (r:regex) (tbl:vertex VertexHash.t) min max : forward list =
     let mk_nodepath (path: string list) : (vertex * vertex list * vertex) =
@@ -385,26 +388,41 @@ module Forward(T:TOPOINFO) = struct
       let r' = Merlin_Preprocess.pad_regex r start_symbol end_symbol in
       let t',p_src,p_dst = Merlin_Topology.pad_topo T.topo in
       let cross_start = Merlin_Time.time () in
-      let g,n_src,n_dst = CrossGraph.cross r' t' in (* T.topo in *)
+      let g,n_srcs,n_dsts = CrossGraph.cross r' t' in
       let cross_time = Merlin_Time.from cross_start in
       Printf.printf "Cross time: %f (nsec)\n" (Merlin_Time.to_nsecs cross_time);
       Printf.printf "Cross time: %f (sec)\n" (Merlin_Time.to_secs cross_time);
-      let src = (n_src,p_src) in
-      let dst = (n_dst,p_dst) in
-      let sp_start = Merlin_Time.time () in
-      let path = CrossGraph.shortest_path g src dst in
-      let sp_stop = Merlin_Time.from sp_start in
-      Printf.printf "Shortest path time: %f (nsec)\n" (Merlin_Time.to_nsecs sp_stop);
-      Printf.printf "Shortest path time: %f (sec)\n" (Merlin_Time.to_secs sp_stop);
-      from_crosspath path p_src p_dst min max
+      let src = NFA.StateSet.fold (fun s acc -> match acc with
+          | Some s -> acc
+          | None ->
+            if CrossGraph.mem_vertex g (s,p_src) then Some (s,p_src) else None
+        ) n_srcs None in
+
+      let dst = NFA.StateSet.fold (fun s acc -> match acc with
+          | Some s -> acc
+          | None ->
+            if CrossGraph.mem_vertex g (s,p_dst) then Some (s,p_dst) else None
+        ) n_dsts None in
+
+      match src, dst with
+      | Some src, Some dst ->
+        let sp_start = Merlin_Time.time () in
+        let path = CrossGraph.shortest_path g src dst in
+        let sp_stop = Merlin_Time.from sp_start in
+        Printf.printf "Shortest path time: %f(nsec)\n" (Merlin_Time.to_nsecs sp_stop);
+        Printf.printf "Shortest path time: %f(sec)\n" (Merlin_Time.to_secs sp_stop);
+        from_crosspath t' path min max
+      | _ -> raise ( Invalid_argument (Merlin_Pretty.string_of_regex r) )
 end
 
 let from_flows (topo:topo) (fs: flow list)
     : (step list * swqconf list * (nwAddr * string) list * (Frenetic_Packet.nwAddr * string) list) =
   let start_time = Merlin_Time.time () in
   let steps, qcs, tcs, clicks = List.fold_left (fun (s,q,t,c) flow ->
-    let steps, qcs, tcs, clicks = Flow.to_machine topo flow in
+      if (!Merlin_Globals.verbose) then
+        Printf.printf "%s\n%!" (Merlin_Pretty.string_of_flow topo flow);
+      let steps, qcs, tcs, clicks = Flow.to_machine topo flow in
     steps::s, qcs::q, tcs::t,clicks::c
   ) ([],[],[],[]) fs in
-  Merlin_Stats.stepgen := Merlin_Time.to_nsecs( Merlin_Time.from start_time );
+  Merlin_Stats.stepgen :=  Merlin_Time.to_nsecs (Merlin_Time.from start_time);
   (List.flatten steps, List.flatten qcs, List.flatten tcs, List.flatten clicks)
