@@ -151,6 +151,9 @@ module CrossGraph = struct
     let nfa = NFA.of_regex r in
     let links = Net.Topology.edges t in
     let transitions = NFA.edges nfa in
+
+    SymbolHash.iter (fun s c ->
+      Printf.printf "%d -> %s\n%!" s (fst c)) symbol_to_code;
     let graph = create
       ~size:((Net.Topology.EdgeSet.length links) * (NFA.EdgeSet.cardinal transitions)) () in
     Net.Topology.EdgeSet.iter links ~f:(fun pe ->
@@ -158,12 +161,14 @@ module CrossGraph = struct
       let p_dst,_ = Net.Topology.edge_dst pe in
       let src_str = Node.name (Net.Topology.vertex_to_label t p_src) in
       NFA.EdgeSet.iter (fun t ->
-        NFA.CharSet.iter (fun c ->
-          let (s, _) = SymbolHash.find symbol_to_code c in
+          NFA.CharSet.iter (fun c ->
+              try
+              let (s, _) = SymbolHash.find symbol_to_code c in
           if s = src_str then
             let n_src,n_dst = NFA.edge_src_dst t in
             add_edge graph (n_src,p_src) (n_dst,p_dst)
           else ()
+               with Not_found -> ()
         ) (NFA.edge_symbols t)
       ) transitions
     ) ;

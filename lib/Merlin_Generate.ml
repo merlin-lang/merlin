@@ -385,7 +385,7 @@ module Forward(T:TOPOINFO) = struct
       let r' = Merlin_Preprocess.pad_regex r start_symbol end_symbol in
       let t',p_src,p_dst = Merlin_Topology.pad_topo T.topo in
       let cross_start = Merlin_Time.time () in
-      let g,n_src,n_dst = CrossGraph.cross r' T.topo in
+      let g,n_src,n_dst = CrossGraph.cross r' t' in (* T.topo in *)
       let cross_time = Merlin_Time.from cross_start in
       Printf.printf "Cross time: %f (nsec)\n" (Merlin_Time.to_nsecs cross_time);
       Printf.printf "Cross time: %f (sec)\n" (Merlin_Time.to_secs cross_time);

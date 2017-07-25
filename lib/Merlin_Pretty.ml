@@ -53,7 +53,6 @@ end
 
 let string_of_pred = Pred.to_string
 let string_of_action = SDN_Types.string_of_action
-let string_of_flow = SDN_Types.string_of_flow
 let string_of_flowTable = SDN_Types.string_of_flowTable
 
 (* End OpenFlow-related printers *)
@@ -213,6 +212,41 @@ let string_of_instruction instr =
 let string_of_instructions l =
   Printf.sprintf "<\n%s\n>\n"
     (list_intercalate string_of_instruction "\n" l)
+
+let string_of_forward t f =
+  let of_hop h = match h with
+      | Ingress -> "i"
+      | Intermediate -> "t"
+      | Egress -> "e"
+      | IngressEgress -> "ie"
+      | Nohop -> "n" in
+  let open Printf in
+  let label = Net.Topology.vertex_to_label t f.topo_vertex in
+  let v = Net.Topology.Vertex.to_string label in
+  let kind = match Node.device label with
+    | Node.Host -> "host"
+    | Node.Switch -> "switch"
+    | Node.Middlebox -> "mbox" in
+  let inp = match f.in_port with None -> "" | Some p -> sprintf "%ld" p in
+  let outp = match f.out_port with None -> "" | Some p -> sprintf "%ld" p in
+  let inh = of_hop f.in_hop in
+  let outh = of_hop f.out_hop in
+  sprintf "%s%s:(%s %s):%s%s" inp inh kind v outp outh
+
+let string_of_flow t f =
+  let buf = Buffer.create 100 in
+  Buffer.add_string buf "(";
+  Buffer.add_string buf (string_of_pred (fst f));
+
+  List.iter
+    (fun f ->
+       Buffer.add_string buf " ";
+       Buffer.add_string buf (string_of_forward t f);
+       Buffer.add_string buf " " )
+    (snd f) ;
+  Buffer.add_string buf "\n";
+  Buffer.contents buf
+
 
 (* Print Presurger reformulation types *)
 

@@ -141,8 +141,26 @@ let _ =
         | None -> [] in
 
       (* For policies without rate guarantees *)
-      let rateless_pgm = ASTProgram unguaranteed in
-      let flows' = solve_sinktree rateless_pgm topo in
+      let open Merlin_Generate in
+      let h_to_s,_,hless = Merlin_Topology.remove_hosts topo in
+      let module F = Forward(struct
+          let topo = topo
+          let hostless = hless
+          let size = Net.Topology.num_vertexes hless
+        end) in
+
+      let unrated = Merlin_Preprocess.desugar (ASTProgram unguaranteed) in
+      let flows' = match unrated with
+        | None -> []
+        | Some unrated ->
+          let Policy (stmts, _) = unrated in
+          List.map (fun stmt ->
+          let Statement(pred,regex,var) = stmt in
+          let forwards = F.from_regex regex h_to_s None None in
+          (pred,forwards)) stmts in
+
+      (* let rateless_pgm = ASTProgram unguaranteed in *)
+      (* let flows' = solve_sinktree rateless_pgm topo in *)
 
       let (ofs, qcs, tcs, clicks) = Merlin_Generate.from_flows
         topo (flows@flows') in

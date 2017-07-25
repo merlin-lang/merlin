@@ -51,7 +51,10 @@ let remove_hosts (n:topo) : (vertex VertexHash.t  * vertex list VertexHash.t * t
     let s' = Node.device (vertex_to_label n s) in
     let d' = Node.device (vertex_to_label n d) in
     match s',d' with
-      | Switch,Switch -> let n', e = add_edge acc s sp edge_label d dp in n'
+    | Switch,Switch ->
+      let n',s' = add_vertex acc (vertex_to_label n s) in
+      let n',d' = add_vertex n' (vertex_to_label n d) in
+      let n', e = add_edge n' s' sp edge_label d' dp in n'
       | Switch,_ ->
         let n',v = add_vertex acc (vertex_to_label n s) in
         VertexHash.set host_to_switch d v;

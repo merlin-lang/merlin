@@ -36,8 +36,8 @@ module Make (T:TABLES) = struct
       let priority = ref 65536 in
       Deferred.List.iter ft ~f:(fun flow ->
 	if (!Merlin_Globals.verbose) then begin
-          Format.printf "%s\n%!"
-            (Merlin_Pretty.string_of_flow flow) end;
+   Format.printf "%s\n%!"
+            (SDN_Types.string_of_flow flow) end;
 	decr priority;
 	OF.send swid 0l (to_flow_mod !priority flow) >>= fun _ ->
         return ())
