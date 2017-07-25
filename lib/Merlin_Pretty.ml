@@ -214,6 +214,15 @@ let string_of_instructions l =
   Printf.sprintf "<\n%s\n>\n"
     (list_intercalate string_of_instruction "\n" l)
 
+
+let string_of_forward t f =
+  let open Printf in
+  let label = Net.Topology.vertex_to_label t f.topo_vertex in
+  let v = Net.Topology.Vertex.to_string label in
+  let inp = match f.in_port with None -> "" | Some p -> sprintf "%ld" p in
+  let outp = match f.out_port with None -> "" | Some p -> sprintf "%ld" p in
+  sprintf "%s:(%s):%s" inp v outp
+
 (* Print Presurger reformulation types *)
 
 let rec string_of_bandwidth (b:bandwidth) = match b with
