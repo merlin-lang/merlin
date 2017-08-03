@@ -235,16 +235,16 @@ let string_of_forward t f =
 
 let string_of_flow t f =
   let buf = Buffer.create 100 in
-  Buffer.add_string buf "(";
   Buffer.add_string buf (string_of_pred (fst f));
+  Buffer.add_string buf " -> [ ";
 
   List.iter
     (fun f ->
        Buffer.add_string buf " ";
        Buffer.add_string buf (string_of_forward t f);
-       Buffer.add_string buf " " )
+       Buffer.add_string buf "; " )
     (snd f) ;
-  Buffer.add_string buf "\n";
+  Buffer.add_string buf "]\n";
   Buffer.contents buf
 
 

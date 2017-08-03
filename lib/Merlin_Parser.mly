@@ -368,7 +368,6 @@ regex_char:
     else
       (* i is an abstract location *)
       let s = get_symbol (i,None) in
-      Printf.printf "Adding %d -> %s\n" s i;
       Char(s )
       }
 

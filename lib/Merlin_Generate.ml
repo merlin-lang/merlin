@@ -418,6 +418,7 @@ end
 let from_flows (topo:topo) (fs: flow list)
     : (step list * swqconf list * (nwAddr * string) list * (Frenetic_Packet.nwAddr * string) list) =
   let start_time = Merlin_Time.time () in
+  if (!Merlin_Globals.verbose) then Printf.printf "\nPrinting paths:\n%!";
   let steps, qcs, tcs, clicks = List.fold_left (fun (s,q,t,c) flow ->
       if (!Merlin_Globals.verbose) then
         Printf.printf "%s\n%!" (Merlin_Pretty.string_of_flow topo flow);

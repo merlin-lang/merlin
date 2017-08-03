@@ -152,8 +152,6 @@ module CrossGraph = struct
     let links = Net.Topology.edges t in
     let transitions = NFA.edges nfa in
 
-    SymbolHash.iter (fun s c ->
-      Printf.printf "%d -> %s\n%!" s (fst c)) symbol_to_code;
     let graph = create
       ~size:((Net.Topology.EdgeSet.length links) * (NFA.EdgeSet.cardinal transitions)) () in
     Net.Topology.EdgeSet.iter links ~f:(fun pe ->
