@@ -161,7 +161,7 @@ module CrossGraph = struct
       NFA.EdgeSet.iter (fun t ->
           NFA.CharSet.iter (fun c ->
               try
-              let (s, _) = SymbolHash.find symbol_to_code c in
+              let s = SymbolHash.find symbol_to_location c in
           if s = src_str then
             let n_src,n_dst = NFA.edge_src_dst t in
             add_edge graph (n_src,p_src) (n_dst,p_dst)

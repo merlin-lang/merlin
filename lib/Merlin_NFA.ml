@@ -90,11 +90,10 @@ module NFA = struct
                 if state_init m q then "<q" ^ string_of_int q ^ ">"
                 else if state_accept m q then "[q" ^ string_of_int q ^ "]"
                 else " q" ^ string_of_int q ^ " " in
-              let (s,fo) = SymbolHash.find symbol_to_code n in
-              acc ^ (Printf.sprintf "%s ==(%s,%s)==> %s\n"
+              let loc = SymbolHash.find symbol_to_location n in
+              acc ^ (Printf.sprintf "%s ==(%s)==> %s\n"
                        (string_of_state q)
-                       s
-                       (match fo with None -> "_" | Some f -> f)
+                       loc
                        (string_of_state q'))
             with Not_found ->
               acc ^ (Printf.sprintf "q%d - ?? -> q%d\n" q q'))
@@ -285,8 +284,8 @@ module NFA = struct
       if p n then begin
         let state = new_state nfa in
         let label = Net.Topology.vertex_to_label t n in
-        let code = (Node.name label, None) in
-        let sym = get_symbol code in
+        let loc = Node.name label in
+        let sym = get_symbol loc in
 
         (* add_trans nfa state symbol state; *)
         VertexHash.add_exn vertex_to_symbol n sym;

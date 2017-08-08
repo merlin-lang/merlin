@@ -60,23 +60,14 @@ let read_soln filename =
 let get_fns t n a =
   let cs = NFA.edge_symbols a in
   NFA.CharSet.fold (fun c acc ->
-    try
-      let (s,fo) = SymbolHash.find symbol_to_code c in
-      let x = match fo with
-        | None -> Phys
-        | Some f ->
-          let l = Net.Topology.vertex_to_label t n in
-          let nstr = Node.name l in
-          if s = nstr then
-            begin
-              if (!verbose) then
-                Printf.printf "DEBUG: get_fns target should implement %s\n" f;
-              Fn f
-            end
-          else Phys in
-      TargetSet.add x acc
-    with Not_found -> acc)
-    cs TargetSet.empty
+      if SymbolHash.mem symbol_to_location c then try
+          let loc = SymbolHash.find symbol_to_location c in
+          let fns = StringHash.find location_to_functions loc in
+          LocationSet.fold (fun l acc -> TargetSet.add (Fn l) acc ) fns acc
+        with Not_found -> TargetSet.add Phys acc
+      else
+        acc)
+   cs TargetSet.empty
 
 let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
     (min:int64 option) (max:int64 option) : forward list =

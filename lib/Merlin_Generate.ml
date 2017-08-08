@@ -369,7 +369,7 @@ module Forward(T:TOPOINFO) = struct
       let dst = LocationHash.find location_to_node !dst in
       (src,path',dst) in
     let rec mk_complete_path (r:regex) = match r with
-      | Char(c) -> let (l,r) = SymbolHash.find symbol_to_code c in [l]
+      | Char(c) -> [ SymbolHash.find symbol_to_location c ]
       | Cat(r1,r2) -> (mk_complete_path r1)@(mk_complete_path r2)
       | Group(r) -> mk_complete_path r
       | _ -> raise (Unrealizable_path r) in

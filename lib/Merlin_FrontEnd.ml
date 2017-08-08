@@ -47,7 +47,7 @@ let parse_topo_file fname =
       LocationHash.add location_to_node name n;
       LocationHash.add location_to_addr name ip;
       AddrHash.add addr_to_location ip name;
-      let _ = get_symbol (name, None) in ()
+      let _ = get_symbol name in ()
     ) in
     topo
   with _ -> raise Topology_parse_error

@@ -74,12 +74,15 @@ let rec string_of_regex r =
   let string_of_alt e =
     match e with
     | Alt(Char(n), Char(m)) ->
+      let open Merlin_Dictionaries in
       begin
-        let l,fo = Merlin_Dictionaries.SymbolHash.find Merlin_Dictionaries.symbol_to_code n in
-        match fo with
-        | None -> Printf.sprintf("%s | %s") (string_of_regex (Char(n))) (string_of_regex (Char(m)))
-        | Some f -> f
-      end
+        (* TODO(basus): Check if the locations match some abstract network function *)
+        let n' = SymbolHash.find symbol_to_location n in
+        let m' = SymbolHash.find symbol_to_location m in
+        Printf.sprintf "(%s | %s" n' m'
+     end
+    | Alt(r1,r2) -> Printf.sprintf "( %s | %s )" ( string_of_regex r1 ) (
+        string_of_regex r2 )
     | _ -> assert (false)
   in
 
@@ -87,15 +90,10 @@ let rec string_of_regex r =
   | AnyChar ->
     "."
   | Char(n) ->
-    begin
-      try
-        let l,fo = Merlin_Dictionaries.SymbolHash.find Merlin_Dictionaries.symbol_to_code n in
-        match fo with
-        | None -> if l = "_in_" || l = "_out_"  then "" else l
-        | Some f -> f
+    ( try Merlin_Dictionaries.SymbolHash.find
+            Merlin_Dictionaries.symbol_to_location n
       with Not_found ->
-        failwith (Printf.sprintf "Malformed regex: %d not found in symbol_to_code" n)
-    end
+        failwith (Printf.sprintf "Malformed regex: %d not found in symbol_to_code" n))
   | Alt(lhs, rhs) ->
     begin
       match r with

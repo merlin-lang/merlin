@@ -128,7 +128,7 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
                   if all_done then acc
                   else
                     try
-                      let (s, _) = SymbolHash.find symbol_to_code c in
+                      let s = SymbolHash.find symbol_to_location c in
                       (* TODO(rjs): we need a better solution than string comparisons *)
                       if s = phys_src_str then
                         let generate =

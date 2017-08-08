@@ -37,15 +37,13 @@ module StringHash = Hashtbl.Make(struct
   let equal = (=)
 end)
 
+(** A symbol is what the DPRLE automata use for the alphabet. Each physical *)
+(** location should map to exactly one symbol. *)
 type symbol = int
 
 type addr = int32
 
 type location = string
-
-type routine = string
-
-type code = location * routine option
 
 module LocationSet = StringSet
 

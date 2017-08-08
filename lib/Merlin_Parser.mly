@@ -359,22 +359,22 @@ regex_char:
       LocationSet.fold
         (fun l acc ->
           match acc with
-          | Empty -> Char(get_symbol (l, Some i))
+          | Empty -> Char(get_symbol l)
           | _ ->
-            Alt(acc, Char(get_symbol (l, Some i))))
+            Alt(acc, Char(get_symbol l)))
         (StringHash.find symbol_table i)
         Empty
       end
     else
       (* i is an abstract location *)
-      let s = get_symbol (i,None) in
+      let s = get_symbol i in
       Char(s )
       }
 
   | IPADDR
       { let _,i = $1 in
     let i = Int64.to_string i in
-    Char(get_symbol (i, None)) }
+    Char(get_symbol i) }
 
   | DOT
       { AnyChar }

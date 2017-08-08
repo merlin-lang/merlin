@@ -90,8 +90,8 @@ let desugar (ast:ast_program) : policy option =
 
       let new_statements =
         List.map2 (fun v (s,d) ->
-          let src = get_symbol (s,None) in
-          let dst = get_symbol (d,None) in
+          let src = get_symbol s in
+          let dst = get_symbol d in
           let r' = pad_regex r src dst in
           add_externals v s d;
           let pred' = pad_predicate pred s d in
