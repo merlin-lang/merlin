@@ -67,6 +67,14 @@ type rate_option =
   | RBoth of int64 * int64
   | RNone
 
+(* This should really go somewhere else *)
+let from_rate (rate:rate_option) = match rate with
+  | RMin r -> Some r, None
+  | RMax r -> None, Some r
+  | RBoth (r1,r2) -> Some r1, Some r2
+  | RNone -> None, None
+
+
 type operator =
   | Add
   | Sub

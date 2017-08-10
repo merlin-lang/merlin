@@ -132,26 +132,14 @@ let _ =
       let topo = parse_topo_file !topo in
       let Program(pgm) as program = parse_program_file !policy in
       let expanded = PP.expand program in
-      let unconst, const = PP.partition expanded in
-      let unconstrained, constrained = PP.flatten const, PP.flatten unconst in
-      let flows = solve constrained topo in
+      let without_min, with_min = PP.partition expanded in
+      let without_min, with_min = PP.flatten without_min, PP.flatten with_min in
 
-      (* For policies without rate guarantees *)
-      let open Merlin_Generate in
-      let h_to_s,_,hless = Merlin_Topology.remove_hosts topo in
-      let module F = Forward(struct
-          let topo = topo
-          let hostless = hless
-          let size = Net.Topology.num_vertexes hless
-        end) in
+      (* For policies with a minimum rate guarantee *)
+      let flows = solve_with_min with_min topo in
 
-      let Policy (stmts, _) = unconstrained in
-      let flows' = List.map (fun stmt ->
-          let Statement(var,pred,regex) = stmt in
-          let rate = StringHash.find var_to_rate var in
-          let forwards = F.from_regex regex h_to_s rate in
-          (pred,forwards)) stmts in
-
+      (* For policies without minimum rate guarantees *)
+      let flows' = solve_without_min without_min topo in
       let flows = (flows@flows') in
       let (ofs, qcs, tcs, clicks) = Merlin_Generate.from_flows
           topo flows in

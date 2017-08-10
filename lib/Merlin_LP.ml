@@ -24,7 +24,6 @@ module type LP_SOLVER = sig
     (Net.Topology.edge * NFA.edge * string) StringMap.t *  (BigGraph.t * NFA.t) list
   val solve : (BigGraph.t * NFA.t) list -> topo -> string list
   val collect : topo -> string list -> (Net.Topology.edge * NFA.edge * string) StringMap.t ->
-    int64 StringMap.t -> int64 StringMap.t ->
     statement StringMap.t -> flow list
 
 end

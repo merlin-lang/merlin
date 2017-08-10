@@ -171,7 +171,6 @@ let call lp =
 let solution_to_flows
     (t:topo)
     (valids:string list) (varmap:(Net.Topology.edge * NFA.edge * string) StringMap.t)
-    (mins: int64 StringMap.t) (maxs: int64 StringMap.t)
     (var_to_stmt:(statement) StringMap.t) : flow list =
 
   (* Map statement variables to their solution variable lists *)
@@ -225,14 +224,7 @@ let solution_to_flows
   let flows = StringMap.fold (fun stmt_var var_path acc ->
     let eas = path_to_edges var_path in
     let Statement(var,pred,regex) = StringMap.find stmt_var var_to_stmt in
-    let min =
-      try
-        let m = StringMap.find var mins in Some (m)
-      with Not_found -> None in
-    let max =
-      try
-        let m = StringMap.find var maxs in Some (m)
-      with Not_found -> None in
+    let min, max = from_rate (StringHash.find var_to_rate var) in
     let fwds = edges_to_fwds t eas min max in
     (pred, fwds)::acc
   ) var_paths [] in

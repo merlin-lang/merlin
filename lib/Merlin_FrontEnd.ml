@@ -66,88 +66,62 @@ let rec vars_to_rates formula ((mins, maxs) as acc) =
   | FNeg(f) ->  (vars_to_rates f acc)
   | FNone -> acc
 
-let partition (Policy(statements, formula)) =
-  let var_to_stmt = List.fold_left
-    (fun acc (Statement(id,_,_) as stmt) -> StringMap.add id stmt acc) StringMap.empty statements in
-  let (mins, maxs) = vars_to_rates formula (StringMap.empty, StringMap.empty) in
-  let (guarantees, others) = List.partition (fun (Statement(id,_,_)) -> StringMap.mem id mins) statements in
-  Merlin_Stats.rated_count := (List.length guarantees);
-  Merlin_Stats.rateless_count := (List.length others);
-  (guarantees, others, mins, maxs, var_to_stmt)
+let solve_with_min (Policy(stmts,_)) (t:topo) : flow list =
+  let module Solver = Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) in
+  let mins = StringHash.fold (fun var rate acc -> match rate with
+      | RMin r
+      | RBoth(r,_) -> StringMap.add var r acc
+      | _ -> acc
+    ) Merlin_Dictionaries.var_to_rate (StringMap.empty) in
+  let v_to_s = List.fold_left (fun acc ( Statement(var,_,_) as s ) ->
+      StringMap.add var s acc
+    ) (StringMap.empty) stmts in
+  let varmap, graphs_nfas = Solver.mk_graph stmts t mins in
+  let edges = Solver.solve graphs_nfas t in
+  let flows = Solver.collect t edges varmap v_to_s in
+  if (!verbose) then begin
+    let oc = open_out "solution.dot" in
+    output_string oc (rated_soln_to_string t edges varmap);
+    close_out oc;
+  end;
+  flows
 
-let solve_guaranteed (stmts:statement list) mins maxs v_to_s (topo:topo)
-    : flow list =
-  match stmts with
-  | [] -> []
-  | _ ->
-    Printf.printf "Solving guranteed\n%!";
-    let module Solver = Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) in
-         let varmap, graphs_nfas = Solver.mk_graph stmts topo mins in
-         let edges = Solver.solve graphs_nfas topo in
-         let flows = Solver.collect topo edges varmap mins maxs v_to_s in
-         if (!verbose) then begin
-           let oc = open_out "solution.dot" in
-           output_string oc (rated_soln_to_string topo edges varmap);
-           close_out oc;
-         end;
-         flows
-
-(* TODO(basus) Check the regex type here. The host_to_switch only works for src .* dst *)
-(* TODO(basus) Only do this if we have a .* style regex. Bucket graphs first *)
-let solve_unguaranteed (stmts:statement list) (t:topo)
-    (* (mins:int64 StringMap.t) (maxs:int64 StringMap.t) *)
-  : flow list =
+let solve_without_min (Policy(stmts,_)) (t:topo) : flow list =
   let open Merlin_Generate in
   let h_to_s,_,hless = Merlin_Topology.remove_hosts t in
   let module F = Forward(struct
       let topo = t
       let hostless = hless
       let size = Net.Topology.num_vertexes hless
-  end) in
+    end) in
   let start = Merlin_Time.time () in
-  let flows = begin
-    let open Core in
-    match stmts with
-      | [] -> []
-      | stmts ->
-        Printf.printf "Solving unguranteed\n%!";
-        List.fold_left stmts ~init:[] ~f:(fun acc stmt ->
-          let Statement(var,pred,regex) = stmt in
-          (* Warning: if you get a Not_found failure from here, it probably
-             means that there is a problem with the topologies later on. You're
-             trying to get node information from a topology that doesn't
-             contain that node. *)
-          (* let max = *)
-          (*   try Some (StringMap.find var maxs) *)
-          (*   with Not_found -> None in *)
-          (* let min = *)
-          (*   try Some (StringMap.find var mins) *)
-          (*   with Not_found -> None in *)
-          let rate = StringHash.find var_to_rate var in
-          let forwards = F.from_regex regex h_to_s rate in
-          (pred,forwards)::acc) end in
+  let flows =
+    (* Warning: if you get a Not_found failure from here, it probably means
+       that there is a problem with the topologies later on. You're trying
+       to get node information from a topology that doesn't contain that
+       node. *)
+    Core.List.fold_left stmts ~init:[] ~f:(fun acc stmt ->
+        let Statement(var,pred,regex) = stmt in
+        let rate = StringHash.find var_to_rate var in
+        let forwards = F.from_regex regex h_to_s rate in
+        (pred,forwards)::acc) in
   let stop = Merlin_Time.from start in
   Merlin_Stats.rless_pathgen := Merlin_Time.to_nsecs stop;
   flows
 
+let solve program topo =
+  let open Merlin_Preprocess in
+  let expanded = expand program in
+  let without_min, with_min = partition expanded in
+  let without_min, with_min = flatten without_min, flatten with_min in
 
-let solve (pol:policy) (t:topo) : flow list =
-  let pol' = Merlin_Preprocess.localize pol in
-  let (guarantees, others, mins, maxs, var_to_stmt) = partition pol' in
+  (* For policies with a minimum rate guarantee *)
+  let padded = pad_policy with_min in
+  let topo',_,_ = pad_topo topo in
+  let flows = solve_with_min padded topo' in
 
-  if (!verbose) then begin
-    Printf.printf "\nMax map:\n";
-    StringMap.iter (fun k v -> Printf.printf "%s -> %Ld\n" k v) maxs;
-    Printf.printf "Min map:\n";
-    StringMap.iter (fun k v -> Printf.printf "%s -> %Ld\n" k v) mins;
-    Printf.printf "\n";
-  end;
-
-  let guarantees' = List.map Merlin_Preprocess.pad_stmt guarantees in
-  let topo,_,_ = pad_topo t in
-
-  let flows  = solve_guaranteed guarantees' mins maxs var_to_stmt topo in
-  let flows' = solve_unguaranteed others t (* mins maxs *) in
+  (* For policies without minimum rate guarantees *)
+  let flows' = solve_without_min without_min topo in
   (flows@flows')
 
 (* let solve_sinktree (ap:ast_program) (topo:topo) : flow list = *)

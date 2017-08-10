@@ -243,12 +243,6 @@ end
 
 module Forward(T:TOPOINFO) = struct
 
-  let from_rate (rate:rate_option) = match rate with
-    | RMin r -> Some r, None
-    | RMax r -> None, Some r
-    | RBoth (r1,r2) -> Some r1, Some r2
-    | RNone -> None, None
-
   let from_path (p:(portId * hop * vertex * portId * hop) list) rate :
       forward list =
     let open Node in
