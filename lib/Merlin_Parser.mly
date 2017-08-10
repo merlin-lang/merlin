@@ -82,7 +82,7 @@ for each statement in the expansion
 %token<Merlin_Types.info> LANGLE RANGLE LBRACK RBRACK LPAREN RPAREN LBRACE RBRACE
 
 %token<Merlin_Types.info> EQUALS LEQ GEQ PLUS MINUS STAR
-%token<Merlin_Types.info> AMP BAR NOT BANG AND OR
+%token<Merlin_Types.info> AMP BAR BANG AND OR NOT
 %token<Merlin_Types.info> TILDE BACKSLASH COMMA DOT COLON SEMI IN FWDSLASH
 %token<Merlin_Types.info> FORALL FOREACH EXISTS EXPAND
 %token<Merlin_Types.info * float> FLOAT
@@ -110,8 +110,22 @@ for each statement in the expansion
 
 %%
 
+/* ------ COMMON FORMS ------*/
 
-  /* ----- CORE LANGUAGE ----- */
+and_:
+  | AND     { () }
+  | AMP AMP { () }
+
+or_:
+  | OR      { () }
+  | BAR BAR { () }
+
+not_:
+  | NOT  { () }
+  | BANG { () }
+
+
+/* ----- CORE LANGUAGE ----- */
 
 policies:
   | core_policy policies
@@ -141,19 +155,19 @@ core_formula:
        { FNone }
 
 core_oformula:
-   | core_oformula OR core_aformula
+   | core_oformula or_ core_aformula
        { FOr($1,$3) }
    | core_aformula
        {  $1 }
 
 core_aformula:
-   | core_aformula AND core_nformula
+   | core_aformula and_ core_nformula
        { FAnd($1, $3) }
    | core_nformula
        { $1 }
 
 core_nformula:
-   | NOT core_xformula
+   | not_ core_xformula
        { FNeg $2 }
    | core_xformula
        { $1 }
@@ -248,19 +262,19 @@ container:
 /* ----- PREDICATES ----- */
 
 predicate :
-  | predicate OR apredicate
+  | predicate or_ apredicate
       { Or ($1, $3) }
   | apredicate
       { $1 }
 
 apredicate:
-  | apredicate AND upredicate
+  | apredicate and_ upredicate
       { And ($1, $3) }
   | upredicate
       { $1 }
 
 upredicate:
-  | NOT upredicate
+  | not_ upredicate
       { Not $2 }
   | xpredicate
       { $1 }
