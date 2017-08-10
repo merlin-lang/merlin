@@ -1,0 +1,6 @@
+[ x : ( tcpDstPort = 80) -> .* log .* ;
+  y : ( tcpDstPort = 22) -> .* ;
+  z : ( not (tcpDstPort =22 or tcpDstPort=80)) -> .* dpi .*],
+max(x, 500Mbps)
+and max(y, 100Mbps)
+and max(z, 100Mbps)

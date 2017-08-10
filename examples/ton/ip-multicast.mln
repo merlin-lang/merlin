@@ -1,0 +1,3 @@
+[ x : (ipDst = 224.0.0.1 or
+       ipDst = 224.0.0.2 ) -> compress .* ],
+max(x, 10GBps)

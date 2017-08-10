@@ -1,0 +1,5 @@
+[ x : (ip.src = 192.168.1.1/16 and
+       ip.dst = 192.168.1.1/16 and
+       ip.proto = 0x06 and
+       tcp.dst = 50060) -> .* ],
+min(x,100MB/s)

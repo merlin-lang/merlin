@@ -30,15 +30,18 @@ let of_example ?(speed=`Slow) fn name =
 (* Not sure if these should be automatically pulled from the examples/ subdirectory *)
 let tests = ["min"; "max"; "defense"]
 
+let papers = Test_TON.tests examples
+
 let () =
   let policy_parsing = List.map tests
       ~f:(of_file Test_Parser.policy ".mln") in
   let topology_parsing = List.map tests
       ~f:(of_file Test_Parser.topology ".dot") in
-  let solving = List.join
-      (List.map tests ~f:(of_example Test_Solver.solve)) in
+  (* let solving = List.join *)
+  (*     (List.map tests ~f:(of_example Test_Solver.solve)) in *)
 
- Alcotest.run "Merlin Compiler & Runtime"
-    [ "Policy parser" , policy_parsing ;
-      "Topology parser", topology_parsing;
-      "Solver", solving ]
+  Alcotest.run "Merlin Compiler & Runtime"
+    ( ( "Policy parser" , policy_parsing )::
+      ( "Topology parser", topology_parsing )::
+      papers )
+(* "Solver", solving *) 
