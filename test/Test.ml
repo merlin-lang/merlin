@@ -37,11 +37,11 @@ let () =
       ~f:(of_file Test_Parser.policy ".mln") in
   let topology_parsing = List.map tests
       ~f:(of_file Test_Parser.topology ".dot") in
-  (* let solving = List.join *)
-  (*     (List.map tests ~f:(of_example Test_Solver.solve)) in *)
+  let solving = List.join
+      (List.map tests ~f:(of_example Test_Solver.solve)) in
 
   Alcotest.run "Merlin Compiler & Runtime"
     ( ( "Policy parser" , policy_parsing )::
       ( "Topology parser", topology_parsing )::
+      ( "Solver", solving )::
       papers )
-(* "Solver", solving *) 
