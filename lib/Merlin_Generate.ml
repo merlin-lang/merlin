@@ -171,7 +171,8 @@ module Flow = struct
         let step, qcopt = mk_step tag pred fwd in
         begin
           match qcopt with
-          | Some qc -> (step::ofs, qc::qcs, tcs, clicks)
+          | Some qc ->
+            (step::ofs, qc::qcs, tcs, clicks)
           | None -> (step::ofs, qcs, tcs, clicks')
         end
       | Middlebox ->
@@ -242,10 +243,16 @@ end
 
 module Forward(T:TOPOINFO) = struct
 
+  let from_rate (rate:rate_option) = match rate with
+    | RMin r -> Some r, None
+    | RMax r -> None, Some r
+    | RBoth (r1,r2) -> Some r1, Some r2
+    | RNone -> None, None
 
-  let from_path (p:(portId * hop * vertex * portId * hop) list) min max :
+  let from_path (p:(portId * hop * vertex * portId * hop) list) rate :
       forward list =
     let open Node in
+    let min, max = from_rate rate in
     List.map (fun (inp,ih,n,outp,oh) ->
         let label = Net.Topology.vertex_to_label T.topo  n in
         { device = (Node.device label, Node.id label)
@@ -255,7 +262,7 @@ module Forward(T:TOPOINFO) = struct
         ; functions = None ; }
       ) p
 
-  let from_vertexpath ((src,path,dst):(vertex * vertex list * vertex)) min max : forward list =
+  let from_vertexpath ((src,path,dst):(vertex * vertex list * vertex)) rate : forward list =
     let open Node in
     let open Net.Topology in
     let open Merlin_Topology in
@@ -268,6 +275,7 @@ module Forward(T:TOPOINFO) = struct
     let src_label = vertex_to_label T.topo src' in
     let src_edge = find_edge T.topo src' pathhead in
     let _,srcport = edge_src src_edge in
+    let min, max = from_rate rate in
     let start = {device = (Node.device src_label,Node.id src_label);
                  in_port = None; out_port = Some srcport;
                  min = min; max = max;
@@ -319,7 +327,7 @@ module Forward(T:TOPOINFO) = struct
                 } in
     List.rev (stop::fwds)
 
-  let from_crosspath t (path:CrossGraph.E.t list) min max : forward list =
+  let from_crosspath t (path:CrossGraph.E.t list) rate : forward list =
     let path' = List.fold_left (fun acc (src,dst) ->
         let open Node in
         let open Net.Topology in
@@ -354,9 +362,9 @@ module Forward(T:TOPOINFO) = struct
               [ (dport,Intermediate,dst,0l,Egress);(0l,Ingress,src,sport,Intermediate) ]
           )
       ) [] path in
-    from_path (List.rev path') min max
+    from_path (List.rev path') rate
 
-  let from_regex (r:regex) (tbl:vertex VertexHash.t) min max : forward list =
+  let from_regex (r:regex) (tbl:vertex VertexHash.t) rate : forward list =
     let mk_nodepath (path: string list) : (vertex * vertex list * vertex) =
       let dst = ref "" in
       let rec aux p = match p with
@@ -375,14 +383,14 @@ module Forward(T:TOPOINFO) = struct
       | _ -> raise (Unrealizable_path r) in
     if (is_complete_path r) then
       let node_path = mk_nodepath (mk_complete_path r) in
-      from_vertexpath node_path min max
+      from_vertexpath node_path rate
     else if (is_any_path r) then begin
       let s,d = get_endpoints r in
       let src = LocationHash.find location_to_node s in
       let dst = LocationHash.find location_to_node d in
-      let r = from_vertexpath (get_shortest_path T.hostless src dst tbl T.size)
-          min max in
-      r
+      from_vertexpath
+        (get_shortest_path T.hostless src dst tbl T.size)
+        rate
     end
     else
       let pad_regex (r:regex) src dst : regex =
@@ -413,7 +421,7 @@ module Forward(T:TOPOINFO) = struct
         let sp_stop = Merlin_Time.from sp_start in
         Printf.printf "Shortest path time: %f(nsec)\n" (Merlin_Time.to_nsecs sp_stop);
         Printf.printf "Shortest path time: %f(sec)\n" (Merlin_Time.to_secs sp_stop);
-        from_crosspath t' path min max
+        from_crosspath t' path rate
       | _ ->
         let msg = Printf.sprintf
             "Cannot satisfy given regular expression in topology: %s"

@@ -67,6 +67,8 @@ let function_to_locations : LocationSet.t StringHash.t = StringHash.create 17
 
 let stmt_to_externals : (StringSet.t * StringSet.t) StringHash.t = StringHash.create 17
 
+let var_to_rate : (rate_option) StringHash.t = StringHash.create 17
+
 let add_externals stmt src dst =
   let srcs,dsts = try StringHash.find stmt_to_externals stmt with Not_found -> (StringSet.empty, StringSet.empty) in
   StringHash.replace stmt_to_externals stmt ((StringSet.add src srcs), (StringSet.add dst dsts))
@@ -107,3 +109,4 @@ let symbol_to_string (s:symbol) : string =
 
 let name_to_node (name:string) =
   LocationHash.find location_to_node name
+

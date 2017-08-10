@@ -171,8 +171,47 @@ let expand (Program pgm) =
       Policy(stmts',form)) (pols@pols')
 
 let partition policies =
+  let merge r1 r2 =
+    let open Int64 in
+    match r1, r2 with
+    | RMin r1, RMin r2 -> RMin ( if r1 < r2 then r1 else r2 )
+    | RMax r1, RMax r2 -> RMax ( if r1 > r2 then r1 else r2 )
+    | RBoth(rn1, rx1), RBoth(rn2,rx2) ->
+      let min = if rn1 < rn2 then rn1 else rn2 in
+      let max = if rx1 > rx2 then rx1 else rx2 in
+      RBoth( min, max)
+    | RMin rn, RMax rx
+    | RMax rx, RMin rn -> RBoth(rn, rx)
+    | RNone, r
+    | r, RNone -> r
+    | RBoth(r1,rx), RMin r2
+    | RMin r2, RBoth(r1,rx) ->
+      RBoth( ( if r1 < r2 then r1 else r2 ), rx)
+    | RBoth(rn,r1), RMax r2
+    | RMax r2, RBoth(rn,r1) ->
+      RBoth( rn, if r1 > r2 then r1 else r2 )
+  in
+
+  let rec to_rate (f:formula) = match f with
+    | FMin(b, n) ->
+      ( match b with
+        | BVar(v) -> RMin n
+        | BSum(_,_) ->  raise Non_local_policy
+        | _ -> raise Non_local_policy )
+    | FMax(b, n) ->
+      ( match b with
+        | BVar(v) -> RMax n
+        | _ -> raise Non_local_policy )
+    | FAnd(f1,f2)
+    | FOr(f1,f2) -> merge (to_rate f1) (to_rate f2)
+    | FNeg(f) -> to_rate f
+    | FNone -> RNone in
+
   List.partition
-    (fun (Policy(_,f)) -> match f with FNone -> true | _ -> false)
+    (fun (Policy(s,f)) ->
+       let rate = to_rate f in
+       List.iter (fun ( Statement(v,_,_) ) -> StringHash.add var_to_rate v rate) s;
+       match rate with RMax _ | RNone -> true | _ -> false)
     policies
 
 let flatten policies =

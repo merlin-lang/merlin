@@ -79,7 +79,9 @@ let solve_guaranteed (stmts:statement list) mins maxs v_to_s (topo:topo)
     : flow list =
   match stmts with
   | [] -> []
-  | _ -> let module Solver = Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) in
+  | _ ->
+    Printf.printf "Solving guranteed\n%!";
+    let module Solver = Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) in
          let varmap, graphs_nfas = Solver.mk_graph stmts topo mins in
          let edges = Solver.solve graphs_nfas topo in
          let flows = Solver.collect topo edges varmap mins maxs v_to_s in
@@ -108,6 +110,7 @@ let solve_unguaranteed (stmts:statement list) (t:topo)
     match stmts with
       | [] -> []
       | stmts ->
+        Printf.printf "Solving unguranteed\n%!";
         List.fold_left stmts ~init:[] ~f:(fun acc stmt ->
           let Statement(var,pred,regex) = stmt in
           (* Warning: if you get a Not_found failure from here, it probably
@@ -120,8 +123,8 @@ let solve_unguaranteed (stmts:statement list) (t:topo)
           (* let min = *)
           (*   try Some (StringMap.find var mins) *)
           (*   with Not_found -> None in *)
-          let min,max = None, None in
-          let forwards = F.from_regex regex h_to_s min max in
+          let rate = StringHash.find var_to_rate var in
+          let forwards = F.from_regex regex h_to_s rate in
           (pred,forwards)::acc) end in
   let stop = Merlin_Time.from start in
   Merlin_Stats.rless_pathgen := Merlin_Time.to_nsecs stop;

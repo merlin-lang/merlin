@@ -148,7 +148,8 @@ let _ =
       let Policy (stmts, _) = unconstrained in
       let flows' = List.map (fun stmt ->
           let Statement(var,pred,regex) = stmt in
-          let forwards = F.from_regex regex h_to_s None None in
+          let rate = StringHash.find var_to_rate var in
+          let forwards = F.from_regex regex h_to_s rate in
           (pred,forwards)) stmts in
 
       let flows = (flows@flows') in
