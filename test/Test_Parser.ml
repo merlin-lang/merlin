@@ -8,4 +8,4 @@ let file fn f () =
 
 let topology f = file parse_topo_file f
 
-let policy f = file parse_policy_file f
+let policy f = file parse_program_file f

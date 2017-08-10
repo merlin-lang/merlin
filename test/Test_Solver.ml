@@ -8,10 +8,12 @@ open Merlin_lang.Merlin_Dictionaries
 
 let solve t p s =
   let topo = parse_topo_file t in
-  let ir =   policy_file_to_ir p in
-  let flows = match ir with
-    |Some ir -> solve ir topo
-    | None -> [] in
+
+  let Program(pgm) as program = parse_program_file !policy in
+  let expanded = expand program in
+  let unconst, const = partition expanded in
+  let unconstrained, constrained = flatten const, flatten unconst in
+  let flows = solve constrained topo in
 
   let sol = Merlin_lang.Merlin_Util.load_lines s in
   let expected = List.fold_left (fun acc line ->
