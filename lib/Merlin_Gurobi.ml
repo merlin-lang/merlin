@@ -125,17 +125,11 @@ let edges_to_fwds (t:topo) (eas:(Net.Topology.edge * NFA.edge * hop) list)
   VertexHash.fold fwd_tbl ~init:[] ~f:(fun ~key:n ~data:(ip,op,ih,oh) acc ->
     let label = Net.Topology.vertex_to_label t n in
 
-    let fns =
-      try let set = VertexHash.find_exn fn_tbl n in
-          Some (StringSet.elements set)
-      with Not_found -> None
-    in
-
-    (* TODO(rjs) Add function information to the fwd type string list option *)
     let fwd = { device = (Node.device label, Node.id label) ;
                 in_hop = ih ; out_hop = oh ;
                 in_port = Some ip ; out_port = Some op ; min = min ; max = max;
-                topo_vertex = n ; predicate = None ; functions = fns ;
+                topo_vertex = n ; predicate = None ;
+                functions = Merlin_Dictionaries.get_fns (Node.name label)
               } in
     fwd :: acc
   )

@@ -244,7 +244,7 @@ module Make (S:TOPO_NFA) = struct
                     ; in_hop = Ingress ; out_hop = Intermediate
                     ; in_port = None ; out_port = Some sp
                     ; min = None ; max = None ; predicate = Some dst_pred
-                    ; functions = None
+                    ; functions = Merlin_Dictionaries.get_fns (Node.name slabel)
                     } in
           fwd :: acc
 
@@ -255,7 +255,7 @@ module Make (S:TOPO_NFA) = struct
                   ; in_hop = Intermediate ; out_hop = Intermediate
                   ; in_port = None ; out_port = Some sp
                   ; min = None ; max = None; predicate = None
-                  ; functions = None ; } in
+                  ; functions = Merlin_Dictionaries.get_fns (Node.name slabel); } in
         fwd::acc
     ) in
 
@@ -274,7 +274,7 @@ module Make (S:TOPO_NFA) = struct
                   ; in_hop = Ingress ; out_hop = Egress
                   ; in_port = None ; out_port = Some oport
                   ; min = None ; max = None; predicate = Some pred
-                  ; functions = None; } in
+                  ; functions = Merlin_Dictionaries.get_fns (Node.name label) } in
         fwd::acc
       ) inter_fwds sink_hosts
 
@@ -294,7 +294,7 @@ module Make (S:TOPO_NFA) = struct
         ; in_hop = Intermediate ; out_hop = Egress
         ; in_port = None ; out_port = Some sp
         ; min = None ; max = None; predicate = Some p
-        ; functions = None ;} :: acc
+        ; functions = Merlin_Dictionaries.get_fns (Node.name label);} :: acc
       ) inter_fwds sink_hosts in
       fwds
 end

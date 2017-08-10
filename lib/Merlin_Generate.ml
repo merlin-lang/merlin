@@ -142,16 +142,15 @@ module Flow = struct
       let open Node in
       let devtype, devid = fwd.device in
 
-      let clicks' =
-        match fwd.functions with
-        | Some fns ->
-          let label = Net.Topology.vertex_to_label t fwd.topo_vertex in
-          let ip = Node.ip label in
-          let click_str = list_intercalate Merlin_Click.to_click "\n" fns in
-          let click =  (ip, click_str) in
-          click::clicks
-        | None -> clicks
-      in
+      let strings = StringSet.fold (fun fn acc ->
+          let open Merlin_Click in
+          try ( to_click fn )::acc with Unknown_click_function _ -> acc
+        ) fwd.functions [] in
+      let label = Net.Topology.vertex_to_label t fwd.topo_vertex in
+      let ip = Node.ip label in
+      let clicks' = match strings with
+        | [] -> clicks
+        | string -> (ip, Core.String.concat ~sep:"\n" strings)::clicks in
 
       match devtype with
       | Host ->
@@ -253,7 +252,7 @@ module Forward(T:TOPOINFO) = struct
         ; topo_vertex = n ; min = min ; max = max; predicate = None
         ; in_port = Some inp ; out_port = Some outp
         ; in_hop = ih; out_hop = oh
-        ; functions = None ; }
+        ; functions = Merlin_Dictionaries.get_fns (Node.name label); }
       ) p
 
   let from_vertexpath ((src,path,dst):(vertex * vertex list * vertex)) rate : forward list =
@@ -274,7 +273,7 @@ module Forward(T:TOPOINFO) = struct
                  in_port = None; out_port = Some srcport;
                  min = min; max = max;
                  in_hop = Nohop; out_hop = Ingress ; topo_vertex = src' ;
-                 predicate = None ; functions = None;
+                 predicate = None ; functions = Merlin_Dictionaries.get_fns (Node.name src_label);
                 } in
 
     let _,fwds,last = List.fold_left (fun (i,acc,last) node ->
@@ -302,7 +301,7 @@ module Forward(T:TOPOINFO) = struct
         let fwd = {in_port = Some ip; device = (nt,sw);
                    out_port = Some op; min = min; max = max;
                    in_hop = ih; out_hop = oh ; topo_vertex = node' ;
-                   predicate = None ; functions = None;
+                   predicate = None ; functions = Merlin_Dictionaries.get_fns (Node.name label);
                   } in
         (i+1, fwd::acc, node)
       | _ ->
@@ -317,7 +316,7 @@ module Forward(T:TOPOINFO) = struct
                  in_port = Some ip; out_port = None ;
                  min = min; max = max;
                  in_hop = Egress; out_hop = Nohop ; topo_vertex = dst' ;
-                 predicate = None ; functions = None;
+                 predicate = None ; functions = Merlin_Dictionaries.get_fns (Node.name dst_label);
                 } in
     List.rev (stop::fwds)
 

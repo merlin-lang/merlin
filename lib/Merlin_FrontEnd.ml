@@ -25,11 +25,16 @@ let parse_file target file  =
   target Merlin_Lexer.main lexbuf
 
 let parse_program_string str =
-  parse_string Merlin_Parser.program str
+  let Program( pgm ) as program = parse_string Merlin_Parser.program str in
+  mk_fn_map pgm.names;
+  program
 
 let parse_program_file fname =
   reset ();
-  parse_file Merlin_Parser.program fname
+  let Program( pgm ) as program = parse_file Merlin_Parser.program fname in
+  mk_fn_map pgm.names;
+  program
+
 
 let parse_topo_file fname =
   try

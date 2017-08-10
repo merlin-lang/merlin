@@ -168,7 +168,7 @@ type forward = {
   ; min      : int64 option
   ; max      : int64 option
   ; predicate : pred option
-  ; functions : string list option
+  ; functions : StringSet.t
 }
 
 type transform = forward * string

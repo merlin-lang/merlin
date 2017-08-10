@@ -110,3 +110,18 @@ let symbol_to_string (s:symbol) : string =
 let name_to_node (name:string) =
   LocationHash.find location_to_node name
 
+let mk_fn_map ( names : StringSet.t StringHash.t ) =
+  StringHash.iter (fun fn locs ->
+      StringHash.add function_to_locations fn locs ;
+      StringSet.iter (fun loc ->
+          if LocationHash.mem location_to_functions loc then
+            let fns = LocationHash.find location_to_functions loc in
+            LocationHash.add location_to_functions loc (StringSet.add fn fns)
+          else
+            LocationHash.add location_to_functions loc (StringSet.singleton fn)
+        ) locs ) names
+
+
+let get_fns name =
+  try StringHash.find location_to_functions name
+  with Not_found -> StringSet.empty
