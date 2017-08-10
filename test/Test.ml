@@ -28,7 +28,7 @@ let of_example ?(speed=`Slow) fn name =
         ( name', speed, t))
 
 (* Not sure if these should be automatically pulled from the examples/ subdirectory *)
-let tests = ["min"; "max"; "defense"]
+let tests = ["min"; "max"; "defense"; "iot"]
 
 let papers = Test_TON.tests examples
 

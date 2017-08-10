@@ -1,0 +1,12 @@
+iot1 := {h1};
+iot2 := {h2};
+dc1 := {h3};
+dc2 := {h4};
+ovsfw := {s2};
+
+foreach(s,d) in distinct(dc1, dc2):
+* -> .* s2 .*;
+
+foreach(s,d) in distinct(dc2, iot2):
+* -> .* s2 .*;
+

@@ -1,0 +1,29 @@
+digraph g1 {
+
+h1[type=host,mac="00:0c:29:34:64:b2",ip="10.10.1.1"];
+h2[type=host,mac="00:0c:29:4e:ff:3f",ip="10.10.2.1"];
+h3[type=host,mac="00:0c:29:41:72:d5",ip="10.10.0.1"];
+h4[type=host,mac="00:0c:29:28:89:da",ip="10.10.0.2"];
+s2[type=switch, ip="192.168.15.249", id=2];
+s1[type=switch, ip="192.168.15.31", id=1];
+
+h1 -> s1 [src_port=0, dst_port=1, cost=1];
+s1 -> h1 [src_port=1, dst_port=0, cost=1];
+
+h2 -> s1 [src_port=0, dst_port=2, cost=1];
+s1 -> h2 [src_port=2, dst_port=0, cost=1];
+
+h3 -> s1 [src_port=0, dst_port=3, cost=1];
+s1 -> h3 [src_port=3, dst_port=0, cost=1];
+
+h4 -> s1 [src_port=0, dst_port=4, cost=1];
+s1 -> h4 [src_port=4, dst_port=0, cost=1];
+
+s2 -> s1 [src_port=1, dst_port=5, cost=1];
+s1 -> s2 [src_port=5, dst_port=1, cost=1];
+
+h1 -> h1 [src_port=1, dst_port=2, cost=1];
+h2 -> h2 [src_port=1, dst_port=2, cost=1];
+h3 -> h3 [src_port=1, dst_port=2, cost=1];
+h4 -> h4 [src_port=1, dst_port=2, cost=1];
+}
