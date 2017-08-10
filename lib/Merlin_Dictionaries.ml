@@ -48,9 +48,8 @@ let print_paths t =
   Printf.printf "-------------------\n"
 
 let nodes_to_paths : vertex list NPH.t = NPH.create 17
-(* let symbol_to_code : code SymbolHash.t = SymbolHash.create 17 *)
 
-(* let code_to_symbol : symbol CodeHash.t = CodeHash.create 17 *)
+let symbol_table : LocationSet.t StringHash.t = StringHash.create 17
 
 let location_to_node : vertex LocationHash.t = LocationHash.create 17
 
@@ -65,8 +64,6 @@ let addr_to_location : location AddrHash.t = AddrHash.create 17
 let location_to_functions : StringSet.t LocationHash.t = LocationHash.create 17
 
 let function_to_locations : LocationSet.t StringHash.t = StringHash.create 17
-
-let symbol_table : LocationSet.t StringHash.t = StringHash.create 17
 
 let stmt_to_externals : (StringSet.t * StringSet.t) StringHash.t = StringHash.create 17
 
@@ -85,12 +82,14 @@ let start_symbol : symbol =
   let n = next_symbol () in
   let s = "_in_" in
   LocationHash.add location_to_symbol s n;
+  SymbolHash.add symbol_to_location n s;
   n
 
 let end_symbol : symbol =
   let n = next_symbol () in
   let s = "_out_" in
   LocationHash.add location_to_symbol s n;
+  SymbolHash.add symbol_to_location n s;
   n
 
 let get_symbol loc =

@@ -28,8 +28,6 @@
  let tcp  : int64 = Int64.of_int 0x06
  let udp  : int64 = Int64.of_int 0x11
 
-
-
 (*
 
 p ::= -- predicates
@@ -97,96 +95,103 @@ for each statement in the expansion
 %token<Merlin_Types.info> NONE
 
 %token<Merlin_Types.info> PHYS FN
-%token<Merlin_Types.info> TRUE
+%token<Merlin_Types.info> TRUE FALSE
+%token<Merlin_Types.info> CROSS ZIP DISTINCT
 
 %left BAR
 %left STAR
 %right NOT
 
-%type <Merlin_Types.ast_program> program
-%type <Merlin_Types.pred> predicate
-%type <Merlin_Types.policy> ir_policy
+%type <Merlin_Types.program> program
 %type <Merlin_LPTypes.lp> lp
-%type <Merlin_Types.regex> regex
-%type <string> pol
 
 %start program
 %start lp
-%start predicate
-%start pol
-%start ir_policy
-%start regex
 
 %%
 
 
-/* ----- IR REPRESENTATION ----- */
+  /* ----- CORE LANGUAGE ----- */
 
-ir_policy:
-  | ir_statements ir_formula
-      { Policy($1, $2) }
+policies:
+  | core_policy policies
+      { $1 :: $2 }
+  | core_policy { [ $1 ] }
+  |
+    {[]}
 
-ir_statements:
-   | ir_statement ir_statements
-       { $1 :: $2 }
-   | ir_statement
+core_policy:
+  | LBRACK core_statements RBRACK core_formula
+      { Policy($2, $4) }
+
+core_statements:
+   | core_statement SEMI core_statements
+       { $1 :: $3 }
+   | core_statement
        { [$1] }
 
-ir_statement:
-   | LPAREN predicate COMMA regex COMMA IDENT RPAREN
-       { let _,id = $6 in
-         Statement($2,$4,id) }
+core_statement:
+   | IDENT COLON LPAREN predicate RPAREN ARROW regex
+       { let _,id = $1 in Statement (id, $4, $7)}
 
-ir_formula:
-   | ir_formula OR ir_aformula
+core_formula:
+   | COMMA core_oformula
+       { $2 }
+   |
+       { FNone }
+
+core_oformula:
+   | core_oformula OR core_aformula
        { FOr($1,$3) }
-   | ir_aformula
+   | core_aformula
        {  $1 }
 
-ir_aformula:
-   | ir_aformula AND ir_nformula
+core_aformula:
+   | core_aformula AND core_nformula
        { FAnd($1, $3) }
-   | ir_nformula
+   | core_nformula
        { $1 }
 
-ir_nformula:
-   | NOT ir_xformula
+core_nformula:
+   | NOT core_xformula
        { FNeg $2 }
-   | ir_xformula
+   | core_xformula
        { $1 }
 
-ir_xformula:
-   | MAX LPAREN ir_bexpr COMMA rate RPAREN
+core_xformula:
+   | MAX LPAREN core_bexpr COMMA rate RPAREN
        { FMax($3, (Int64.of_float $5)) }
-   | MIN LPAREN ir_bexpr COMMA rate RPAREN
+   | MIN LPAREN core_bexpr COMMA rate RPAREN
        { FMin($3, (Int64.of_float $5)) }
    | TRUE
        { FNone }
 
-ir_bexpr:
-   | ir_bexpr PLUS ir_bexpr_atom
+core_bexpr:
+   | core_bexpr PLUS core_bexpr_atom
        { BSum($1,$3) }
-   | ir_bexpr_atom
+   | core_bexpr_atom
        { $1 }
 
-ir_bexpr_atom:
+core_bexpr_atom:
    | rate
        { BLit (Int64.of_float $1) }
    | IDENT
        { let _,i = $1 in BVar i }
 
-/* ----- SURFACE LANGUAGE ----- */
+/* ----- COMPLETE LANGUAGE ----- */
 program:
- | assignments policies
-     { ASTProgram($2) }
+ | names blocks policies
+     { Program { names = symbol_table
+               ; blocks = $2
+               ; policies = $3 } }
 
-assignments :
- | assignment assignments
+names :
+ | name names
      { $1 }
  |
      { () }
 
-assignment:
+name:
  | IDENT ASSIGN set_literal SEMI
      {
        let _,i = $1 in
@@ -199,42 +204,46 @@ assignment:
 set_literal:
  | LBRACE id_ps RBRACE {$2}
 
-policies :
-   | policy policies
+/* ------ MACRO LANGUAGE --- --- */
+
+blocks :
+   | block blocks
        { $1 :: $2 }
-   | policy { [$1] }
+   | block { [ $1 ] }
+   |
+     { [] }
 
-policy:
-   | comprehension predicate ARROW regex rate_stmt SEMI
-       { ASTPolicy($1, $2, $4, $5)}
+block:
+   | iterator IN expander COLON predicate ARROW regex rate_stmt SEMI
+        {
+          Block { iter = $1
+                ; expander = $3
+                ; pred = $5
+                ; regex = $7
+                ; rate = $8 } }
 
-comprehension:
-   | FOREACH pair COLON expansion
-       {Foreach($2, $4)}
+iterator:
+   | FOREACH pair
+        { let s,d = $2 in Foreach(s,d) }
 
 pair:
    | LPAREN IDENT COMMA IDENT RPAREN
        { let _,i = $2 in
          let _,j = $4 in
-         Pair(i, j) }
+         (i, j) }
 
-expansion:
-   | IDENT LPAREN term COMMA term RPAREN
-       {
-         let _,i = $1 in
-         Expansion(i,$3,$5)}
+expander:
+   | ZIP LPAREN container COMMA container RPAREN
+       { Zip($3,$5) }
+   | CROSS LPAREN container COMMA container RPAREN
+       { Cross($3,$5) }
+   | DISTINCT LPAREN container COMMA container RPAREN
+       { Distinct($3,$5) }
 
-term:
+container:
    | IDENT
-       {
-         let _,i = $1 in
-         if not (StringHash.mem symbol_table i) then
-           raise (Undefined_symbol(i))
-         else
-           StringHash.find symbol_table i
-       }
-   | set_literal { $1 }
-
+       { let _,n = $1 in Name n }
+   | set_literal { Set $1 }
 
 /* ----- PREDICATES ----- */
 
@@ -352,29 +361,11 @@ regex_neg :
 
 regex_char:
   | IDENT
-      { let _,i = $1 in
-    if StringHash.mem symbol_table i then
-      begin
-      (* i is an abstract function *)
-      LocationSet.fold
-        (fun l acc ->
-          match acc with
-          | Empty -> Char(get_symbol l)
-          | _ ->
-            Alt(acc, Char(get_symbol l)))
-        (StringHash.find symbol_table i)
-        Empty
-      end
-    else
-      (* i is an abstract location *)
-      let s = get_symbol i in
-      Char(s )
-      }
-
+      { let _,i = $1 in Char (get_symbol i) }
   | IPADDR
       { let _,i = $1 in
-    let i = Int64.to_string i in
-    Char(get_symbol i) }
+        let i = Int64.to_string i in
+        Char(get_symbol i) }
 
   | DOT
       { AnyChar }
@@ -428,28 +419,6 @@ rate:
           | _ -> raise Parse_error in
         Int64.to_float (Int64.mul n  m)
       }
-
-/* ----- IR ----- */
-
-bw:
-    | expr       { "expr" }
-
-phi:
-    | MAX LPAREN bw COMMA expr RPAREN
-       { "max" }
-    | MIN LPAREN bw COMMA expr RPAREN
-       { "max" }
-
-stmt: 
-    | LANGLE predicate COMMA regex COMMA term RANGLE { "stmt" }
-
-stmt_pc:
-   | stmt COMMA stmt_pc  { $1 :: $3 }
-   | stmt  { [$1] }
-
-pol: 
-   | LBRACK stmt_pc RBRACK COMMA phi { "pol" }
-
 
 /* ----- SOLVER LANGUAGE ----- */
 lp:

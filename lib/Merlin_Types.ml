@@ -77,14 +77,14 @@ type expr =
   | Binary of operator * expr * expr
   | RateLiteral of int64
 
-type expansion = Expansion of string * LocationSet.t  * LocationSet.t
+(* type expansion = Expansion of string * LocationSet.t  * LocationSet.t *)
 
 
-type pair = Pair of location * location
-type comprehension = Foreach of pair * expansion
+(* type pair = Pair of location * location *)
+(* type comprehension = Foreach of pair * expansion *)
 
-type ast_policy  = ASTPolicy of comprehension * pred * regex * rate_option
-type ast_program = ASTProgram of ast_policy list
+(* type ast_policy  = ASTPolicy of comprehension * pred * regex * rate_option *)
+(* type ast_program = ASTProgram of ast_policy list *)
 
 type bandwidth =
   | BLit of Int64.t
@@ -99,12 +99,34 @@ type formula =
   | FNeg of formula
   | FNone
 
-(* predicate, path regex, variable *)
-type statement = Statement of pred * regex * string
+(** Syntax Types *)
+
+(** Macro syntax types *)
+type variable = string
+
+type container = Name of string
+               | Set of LocationSet.t
+
+type iterator = Foreach of variable * variable
+
+type expander = Zip of container * container
+              | Cross of container * container
+              | Distinct of container * container
+
+type block = Block of { iter : iterator
+                      ; expander : expander
+                      ; pred : pred
+                      ; regex : regex
+                      ; rate : rate_option }
+
+(** Core syntax types *)
+type statement = Statement of variable * pred * regex
 
 type policy = Policy of statement list * formula
 
-type rate_tbl = (string, rate) Hashtbl.t
+type program = Program of { names : StringSet.t StringHash.t
+                          ; blocks : block list
+                          ; policies : policy list }
 
 (* Map functions to network entities *)
 type target =

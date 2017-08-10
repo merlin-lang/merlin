@@ -11,7 +11,7 @@ open Merlin_FrontEnd
 open Merlin_BigGraph
 open Merlin_Controller
 open Merlin_Dictionaries
-
+module PP = Merlin_Preprocess
 
 (* Modes *)
 type modeType =
@@ -130,15 +130,11 @@ let _ =
   then match !mode with
     | CompilerMode ->
       let topo = parse_topo_file !topo in
-      let ast = parse_policy_file !policy in
-      let guaranteed, unguaranteed = partition_ast ast in
-
-      (* For policies with rate guarantees *)
-      let rated_pgm = ASTProgram guaranteed in
-      let ir = Merlin_Preprocess.desugar rated_pgm in
-      let flows = match ir with
-        | Some pol -> solve pol topo
-        | None -> [] in
+      let Program(pgm) as program = parse_program_file !policy in
+      let expanded = PP.expand program in
+      let unconst, const = PP.partition expanded in
+      let unconstrained, constrained = PP.flatten const, PP.flatten unconst in
+      let flows = solve constrained topo in
 
       (* For policies without rate guarantees *)
       let open Merlin_Generate in
@@ -149,19 +145,15 @@ let _ =
           let size = Net.Topology.num_vertexes hless
         end) in
 
-      let unrated = Merlin_Preprocess.desugar (ASTProgram unguaranteed) in
-      let flows' = match unrated with
-        | None -> []
-        | Some unrated ->
-          let Policy (stmts, _) = unrated in
-          List.map (fun stmt ->
-              let Statement(pred,regex,var) = stmt in
-              let forwards = F.from_regex regex h_to_s None None in
-              (pred,forwards)) stmts in
+      let Policy (stmts, _) = unconstrained in
+      let flows' = List.map (fun stmt ->
+          let Statement(var,pred,regex) = stmt in
+          let forwards = F.from_regex regex h_to_s None None in
+          (pred,forwards)) stmts in
 
       let flows = (flows@flows') in
       let (ofs, qcs, tcs, clicks) = Merlin_Generate.from_flows
-        topo flows in
+          topo flows in
 
       let forwards = Merlin_Generate.Gather.steps ofs in
       let num_ofs = Hashtbl.fold (fun swid pol acc ->
@@ -193,17 +185,18 @@ let _ =
       end
 
 
-  | SinkMode ->
-    let topo = parse_topo_file !topo in
-    let flows = Merlin_FrontEnd.solve_sinktree
-      (parse_policy_file !policy) topo in
+    | SinkMode ->
+      Printf.printf "Sink mode unimplemented\n%!"
+    (* let topo = parse_topo_file !topo in *)
+    (* let flows = Merlin_FrontEnd.solve_sinktree *)
+    (*   (parse_policy_file !policy) topo in *)
 
-    let (steps, qcs, tcs, clicks) = Merlin_Generate.from_flows topo flows in
+    (* let (steps, qcs, tcs, clicks) = Merlin_Generate.from_flows topo flows in *)
 
-    if (!verbose) then begin
-      Merlin_Human.print_all steps qcs tcs clicks
-    end;
-    Merlin_Stats.print_stats topo;
+    (* if (!verbose) then begin *)
+    (*   Merlin_Human.print_all steps qcs tcs clicks *)
+    (* end; *)
+    (* Merlin_Stats.print_stats topo; *)
     (* Gc.print_stat stdout *)
 
   | HelpMode ->
@@ -213,8 +206,8 @@ let _ =
   | ServerMode ->
     (* TODO(basus) : This only runs the controller, the "server" still needs to
        be ported to async. *)
-    let ofs, qcs, tcs, clicks =
-      Merlin_FrontEnd.generate_from_files !topo !policy in
+    let ofs, qcs, tcs, clicks = [], [], [], [] in
+      (* Merlin_FrontEnd.generate_from_files !topo !policy in *)
     let topo = parse_topo_file !topo in
     if (!verbose) then begin
       Merlin_Human.print_all ofs qcs tcs clicks
@@ -230,12 +223,13 @@ let _ =
     Core.never_returns (Async.Scheduler.go ())
 
   | InvariantMode ->
-    let topo = parse_topo_file !topo in
-    let policy = parse_policy_file !policy in
-    let results = check_invariant policy topo in
-    Printf.printf "Name\tResult\tError\n";
-    List.iter (function Invariant(name,result,error) -> match error with
-      | Some err -> Printf.printf "%s\t%B\t%s\n" name result err
-      | None -> Printf.printf "%s\t%B\tNone\n" name result
-    ) results
+    Printf.printf "Invariant mode unimplemented\n%!"
+(* let topo = parse_topo_file !topo in *)
+(*     let program = parse_program_file !policy in *)
+(*     let results = check_invariant program topo in *)
+(*     Printf.printf "Name\tResult\tError\n"; *)
+(*     List.iter (function Invariant(name,result,error) -> match error with *)
+(*       | Some err -> Printf.printf "%s\t%B\t%s\n" name result err *)
+(*       | None -> Printf.printf "%s\t%B\tNone\n" name result *)
+(*     ) results *)
 

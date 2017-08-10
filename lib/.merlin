@@ -1,6 +1,7 @@
 B ../_build/default/lib
-FLG -ppx "$(opam config var bin)/ppx-jane --as-ppx"
 FLG -open Merlin_lang -w -40 -w -40
+FLG -ppx "$(opam config var bin)/ppx-jane --as-ppx"
+PKG astring
 PKG async
 PKG async_extra
 PKG async_kernel
@@ -16,11 +17,12 @@ PKG bin_prot.shape
 PKG biniou
 PKG bytes
 PKG cohttp
+PKG cohttp-async
 PKG cohttp.async
 PKG compiler-libs
 PKG compiler-libs.common
 PKG conduit
-PKG conduit.async
+PKG conduit-async
 PKG core
 PKG core_kernel
 PKG core_kernel.base_for_tests
@@ -33,25 +35,16 @@ PKG dynlink
 PKG easy-format
 PKG fieldslib
 PKG fmt
-PKG fmt.tty
 PKG frenetic
 PKG frenetic.async
 PKG gen
-PKG io-page
 PKG ipaddr
 PKG ipaddr.unix
 PKG jane-street-headers
 PKG logs
 PKG logs.fmt
-PKG lwt
 PKG magic-mime
 PKG menhirLib
-PKG mirage-device
-PKG mirage-flow
-PKG mirage-net
-PKG mirage-net-lwt
-PKG mirage-protocols
-PKG mirage-protocols-lwt
 PKG mparser
 PKG mparser.re
 PKG mtime
@@ -115,6 +108,7 @@ PKG stdio
 PKG str
 PKG stringext
 PKG tcpip
+PKG tcpip.unix
 PKG threads
 PKG threads.posix
 PKG typerep

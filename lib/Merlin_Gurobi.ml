@@ -224,7 +224,7 @@ let solution_to_flows
 
   let flows = StringMap.fold (fun stmt_var var_path acc ->
     let eas = path_to_edges var_path in
-    let Statement(pred,regex,var) = StringMap.find stmt_var var_to_stmt in
+    let Statement(var,pred,regex) = StringMap.find stmt_var var_to_stmt in
     let min =
       try
         let m = StringMap.find var mins in Some (m)

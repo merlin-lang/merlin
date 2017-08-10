@@ -363,7 +363,7 @@ module Forward(T:TOPOINFO) = struct
         | [] -> []
         | [n] -> dst := n; []
         | n::ns -> let node = LocationHash.find location_to_node n in
-                   node::(aux ns) in
+          node::(aux ns) in
       let src = LocationHash.find location_to_node (List.hd path) in
       let path' = List.rev(aux (List.tl path)) in
       let dst = LocationHash.find location_to_node !dst in
@@ -381,11 +381,13 @@ module Forward(T:TOPOINFO) = struct
       let src = LocationHash.find location_to_node s in
       let dst = LocationHash.find location_to_node d in
       let r = from_vertexpath (get_shortest_path T.hostless src dst tbl T.size)
-        min max in
+          min max in
       r
     end
     else
-      let r' = Merlin_Preprocess.pad_regex r start_symbol end_symbol in
+      let pad_regex (r:regex) src dst : regex =
+        Cat(Cat(Char src, r), Char(dst)) in
+      let r' = pad_regex r start_symbol end_symbol in
       let t',p_src,p_dst = Merlin_Topology.pad_topo T.topo in
       let cross_start = Merlin_Time.time () in
       let g,n_srcs,n_dsts = CrossGraph.cross r' t' in
@@ -412,7 +414,11 @@ module Forward(T:TOPOINFO) = struct
         Printf.printf "Shortest path time: %f(nsec)\n" (Merlin_Time.to_nsecs sp_stop);
         Printf.printf "Shortest path time: %f(sec)\n" (Merlin_Time.to_secs sp_stop);
         from_crosspath t' path min max
-      | _ -> raise ( Invalid_argument (Merlin_Pretty.string_of_regex r) )
+      | _ ->
+        let msg = Printf.sprintf
+            "Cannot satisfy given regular expression in topology: %s"
+            (Merlin_Pretty.string_of_regex r) in
+        raise ( Invalid_argument msg )
 end
 
 let from_flows (topo:topo) (fs: flow list)

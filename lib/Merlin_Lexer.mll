@@ -93,6 +93,10 @@
         ; ("not", fun i -> NOT i)
         ; ("in", fun i -> IN i)
         ; ("true", fun i -> TRUE i)
+        ; ("false", fun i -> FALSE i)
+        ; ("cross", fun i -> CROSS i)
+        ; ("zip", fun i -> ZIP i)
+        ; ("distinct", fun i -> DISTINCT i)
       ]
 
   let int_of_hex = function

@@ -66,27 +66,8 @@ let string_of_info f ((l1,c1),(l2,c2)) =
 (* Pretty Printers for Merlin datatypes *)
 
 let rec string_of_regex r =
-
-  (* TODO(rjs): this is a hack. If we have an alt with a bunch of function that maps to
-     a set of host, we only want to print the function once. In other words:
-     h1 | h2 should print fire1, not fire1 | fire1.
-  *)
-  let string_of_alt e =
-    match e with
-    | Alt(Char(n), Char(m)) ->
-      let open Merlin_Dictionaries in
-      begin
-        (* TODO(basus): Check if the locations match some abstract network function *)
-        let n' = SymbolHash.find symbol_to_location n in
-        let m' = SymbolHash.find symbol_to_location m in
-        Printf.sprintf "(%s | %s" n' m'
-     end
-    | Alt(r1,r2) -> Printf.sprintf "( %s | %s )" ( string_of_regex r1 ) (
-        string_of_regex r2 )
-    | _ -> assert (false)
-  in
-
-  match r with
+  (* TODO(basus): Check if the locations match some abstract network function *)
+   match r with
   | AnyChar ->
     "."
   | Char(n) ->
@@ -95,13 +76,7 @@ let rec string_of_regex r =
       with Not_found ->
         failwith (Printf.sprintf "Malformed regex: %d not found in symbol_to_code" n))
   | Alt(lhs, rhs) ->
-    begin
-      match r with
-      | Alt(Char(n), Char(m)) -> string_of_alt r
-      | Alt(lhs, rhs) ->  Printf.sprintf("%s | %s") (string_of_regex lhs) (string_of_regex rhs)
-      | _ -> assert (false)
-    end
-
+    Printf.sprintf("( %s | %s )") (string_of_regex lhs) (string_of_regex rhs)
   | Cat(lhs, rhs) ->
     Printf.sprintf("%s %s") (string_of_regex lhs) (string_of_regex rhs)
   | Kleene(expr) ->
@@ -119,29 +94,12 @@ let string_of_operator (op:operator) = match op with
 let string_of_locationset (ls:LocationSet.t) =
     Printf.sprintf "{%s}" (LocationSet.intercalate (fun x -> x) ";" ls)
 
-let string_of_pair (p:pair) =
-  let Pair(l1,l2) = p in
-  Printf.sprintf "(%s,%s)" l1 l2
-
-
 let rec string_of_expr (e:expr) = match e with
   | Binary(op,e1,e2) -> Printf.sprintf "(%s %s %s)"
                         (string_of_expr e1)
                         (string_of_operator op)
                         (string_of_expr e2)
   | RateLiteral(i) -> Int64.to_string i
-
-let string_of_expansion (e:expansion) = match e with
-  | Expansion (s,ls1,ls2) -> Printf.sprintf "%s(%s,%s)"
-                        s
-                        (string_of_locationset ls1)
-                        (string_of_locationset ls2)
-
-let string_of_comprehension (c:comprehension) =
-  let Foreach(p,e) = c in
-  Printf.sprintf "foreach %s : %s"
-    (string_of_pair p)
-    (string_of_expansion e)
 
 let string_of_rate r =
   let Rate(min,max) = r in
@@ -153,17 +111,6 @@ let string_of_rate_option r =
   | RMax(n) -> Printf.sprintf "max(%Ld bps)" n
   | RBoth(n,m) -> Printf.sprintf "min(%Ld bps) max(%Ld bps)" n m
   | RNone -> ""
-
-let string_of_policy_ast s =
-  let ASTPolicy(c,p,a,r) = s in
-  Printf.sprintf("%s\n%s -> %s at %s;\n")
-    (string_of_comprehension c)
-    (string_of_pred p)
-    (string_of_regex a)
-    (string_of_rate_option r)
-
-let string_of_program_ast p =
-  let ASTProgram(l) = p in list_intercalate string_of_policy_ast "\n" l
 
 let string_of_swqconf qc =
   let QConf(sw,p,q,min,max) = qc in
@@ -272,7 +219,7 @@ let rec string_of_formula (f:formula) = match f with
 
 
 let string_of_statement (s:statement) =
-  let Statement(p,r,v) = s in
+  let Statement(v,p,r) = s in
   Printf.sprintf "[%s, %s, %s]" 
     (string_of_pred p) (string_of_regex r) v
 

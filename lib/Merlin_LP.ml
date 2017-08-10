@@ -156,7 +156,7 @@ module Make(H:LP_HEURISTIC) : LP_SOLVER = struct
     in
     let bg_start = Merlin_Time.time () in
     let m,graphs_nfas = List.fold_left (fun (m,graphs_nfas) s ->
-      let Statement(p,e,v) = s in
+      let Statement(v,p,e) = s in
       let min =
         try StringMap.find v rate_tbl
         with Not_found -> begin Printf.printf "*** Not found v is %s \n" v; 0L end
