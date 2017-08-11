@@ -71,8 +71,15 @@ let rec vars_to_rates formula ((mins, maxs) as acc) =
   | FNeg(f) ->  (vars_to_rates f acc)
   | FNone -> acc
 
-let solve_with_min (Policy(stmts,_)) (t:topo) : flow list =
-  let module Solver = Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) in
+let solve_with_min (solver:solver) (Policy(stmts,_)) (t:topo) : flow list =
+  (* Choose the appropriate solver *)
+  let s = match solver with
+    | Gurobi  -> ( module Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) : Merlin_LP.LP_SOLVER )
+    | Cplex -> failwith "Cplex solver unimplemented"
+    | Canned -> ( module Merlin_LP.Canned : Merlin_LP.LP_SOLVER ) in
+  let module Solver = ( val s ) in
+
+  (* Create inputs for the LP problem generation algorithm *)
   let mins = StringHash.fold (fun var rate acc -> match rate with
       | RMin r
       | RBoth(r,_) -> StringMap.add var r acc
@@ -81,9 +88,12 @@ let solve_with_min (Policy(stmts,_)) (t:topo) : flow list =
   let v_to_s = List.fold_left (fun acc ( Statement(var,_,_) as s ) ->
       StringMap.add var s acc
     ) (StringMap.empty) stmts in
+
+  (* Invoke the solver and in back the result *)
   let varmap, graphs_nfas = Solver.mk_graph stmts t mins in
   let edges = Solver.solve graphs_nfas t in
   let flows = Solver.collect t edges varmap v_to_s in
+
   if (!verbose) then begin
     let oc = open_out "solution.dot" in
     output_string oc (rated_soln_to_string t edges varmap);
@@ -114,7 +124,7 @@ let solve_without_min (Policy(stmts,_)) (t:topo) : flow list =
   Merlin_Stats.rless_pathgen := Merlin_Time.to_nsecs stop;
   flows
 
-let solve program topo =
+let solve solver program topo =
   let open Merlin_Preprocess in
   let expanded = expand program in
   let without_min, with_min = partition expanded in
@@ -123,7 +133,7 @@ let solve program topo =
   (* For policies with a minimum rate guarantee *)
   let padded = pad_policy with_min in
   let topo',_,_ = pad_topo topo in
-  let flows = solve_with_min padded topo' in
+  let flows = solve_with_min solver padded topo' in
 
   (* For policies without minimum rate guarantees *)
   let flows' = solve_without_min without_min topo in

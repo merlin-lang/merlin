@@ -344,3 +344,7 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
       [] graphs_nfas in
     [Binary(terms)]
 end
+
+module Canned : LP_SOLVER = struct
+  include Make(ShortestPathHeuristic)
+end

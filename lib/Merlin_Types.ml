@@ -4,6 +4,12 @@ open Frenetic_Network
 module SDN_Types = Frenetic_OpenFlow
 open Frenetic_OpenFlow
 
+(* Different LP solver backends *)
+type solver =
+  | Gurobi
+  | Cplex
+  | Canned
+
 (* Predicate and OpenFlow interop  *)
 type queueId = SDN_Types.queueId
 type switchId = SDN_Types.switchId

@@ -23,12 +23,19 @@ type modeType =
 
 let mode = ref CompilerMode
 
+let solver = ref Gurobi
+
+let parse_solver s = match String.lowercase_ascii s with
+  | "gurobi" -> Gurobi
+  | "cplex"  -> failwith "CPLEX backend not implemented\n"
+  | "canned" -> Canned
+  | _ -> failwith (Printf.sprintf "Unknown solver option %s" s )
+
 (* Defaults *)
 let heuristic = ref "sp"
 let controller = ref false
 let negotiator = ref false
 
-let solver = ref false
 let dummy = ref false
 
 let lpfile = ref "merlin.lp"
@@ -40,9 +47,13 @@ let from_ir = ref false
 
 let arg_spec =
   [ (* First the operation modes *)
-    ("-server",
+      ("-server",
        Arg.Unit (fun () -> mode := ServerMode),
        "\tExpose a negotiator on the given IP and port")
+    ; ("-solver",
+       Arg.String (fun s -> solver := parse_solver s),
+       "\tChoose the LP solver used"
+      )
     ; ("-sink",
        Arg.Unit (fun () -> mode := SinkMode; sink := true),
        "\tGenerate path solutions according to sink trees for egress switches")
@@ -67,9 +78,6 @@ let arg_spec =
     ; ("-controller",
        Arg.Unit (fun () -> controller := true),
        "\tRun as a controller after generating paths.")
-    ; ("-solver",
-       Arg.Unit (fun () -> solver := true),
-       "\tGenerate and solve the LP problem only, do not generate code")
     ; ("-stat",
        Arg.Unit (fun () -> stat := true),
        "\tPrint results in an easy-to-crunch format")
@@ -136,7 +144,7 @@ let _ =
       let without_min, with_min = PP.flatten without_min, PP.flatten with_min in
 
       (* For policies with a minimum rate guarantee *)
-      let flows = solve_with_min with_min topo in
+      let flows = solve_with_min !solver with_min topo in
 
       (* For policies without minimum rate guarantees *)
       let flows' = solve_without_min without_min topo in
