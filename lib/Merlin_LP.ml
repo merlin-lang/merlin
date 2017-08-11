@@ -345,6 +345,13 @@ module MinMaxReservedHeuristic : LP_HEURISTIC  = struct
     [Binary(terms)]
 end
 
+module ShortestPath = Make(ShortestPathHeuristic)
+
 module Canned : LP_SOLVER = struct
-  include Make(ShortestPathHeuristic)
+  module M = Make(ShortestPathHeuristic)
+
+  let mk_graph = M.mk_graph
+  let collect = M.collect
+
+  let solve _ _ = Merlin_Gurobi.( read_soln sol_file )
 end

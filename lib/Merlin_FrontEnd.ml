@@ -74,9 +74,9 @@ let rec vars_to_rates formula ((mins, maxs) as acc) =
 let solve_with_min (solver:solver) (Policy(stmts,_)) (t:topo) : flow list =
   (* Choose the appropriate solver *)
   let s = match solver with
-    | Gurobi  -> ( module Merlin_LP.Make(Merlin_LP.ShortestPathHeuristic) : Merlin_LP.LP_SOLVER )
-    | Cplex -> failwith "Cplex solver unimplemented"
-    | Canned -> ( module Merlin_LP.Canned : Merlin_LP.LP_SOLVER ) in
+    | Gurobi  -> ( module Merlin_LP.ShortestPath : Merlin_LP.LP_SOLVER )
+    | Canned ->  ( module Merlin_LP.Canned : Merlin_LP.LP_SOLVER )
+    | Cplex -> failwith "Cplex solver unimplemented" in
   let module Solver = ( val s ) in
 
   (* Create inputs for the LP problem generation algorithm *)
