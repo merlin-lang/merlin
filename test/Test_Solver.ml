@@ -9,7 +9,7 @@ open Merlin_lang.Merlin_Dictionaries
 let solve t p s =
   let topo = parse_topo_file t in
   let program = parse_program_file p in
-  let flows = solve program topo in
+  let flows = solve Gurobi program topo in
 
   let sol = Merlin_lang.Merlin_Util.load_lines s in
   let expected = List.fold_left (fun acc line ->
